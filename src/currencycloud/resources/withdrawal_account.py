@@ -5,9 +5,11 @@ from currencycloud.resources.resource import Resource
 
 class WithdrawalAccount(Resource):
     """This class represents a CurrencyCloud WithdrawalAccount"""
+
     pass
 
 
 class WithdrawalAccountFunds(Resource):
     """This class represents a CurrencyCloud WithdrawalAccountFunds"""
+
     pass

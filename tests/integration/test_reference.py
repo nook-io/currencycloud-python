@@ -1,27 +1,32 @@
-from betamax import Betamax
-
 from currencycloud import Client, Config
-from currencycloud.resources import *
+from currencycloud.resources import (
+    BankDetails,
+    BeneficiaryRequiredDetails,
+    ConversionDates,
+    Currency,
+    PayerRequiredDetails,
+    PaymentFeeRule,
+    PaymentPurposeCode,
+    SettlementAccount,
+)
+
+from tests.integration.conftest import my_vcr
 
 
 class TestReference:
-    def setup_method(self, method):
+    def setup_method(self, method) -> None:
         # TODO: To run against real server please delete ../fixtures/vcr_cassettes/* and replace
         # login_id and api_key with valid credentials before running the tests
-        login_id = 'development@currencycloud.com'
-        api_key = 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef'
+        login_id = "development@currencycloud.com"
+        api_key = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
         environment = Config.ENV_DEMO
 
         self.client = Client(login_id, api_key, environment)
 
-    def test_reference_can_retrieve_beneficiary_required_details(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('reference/can_retrieve_beneficiary_required_details')
-
-            details = self.client.reference.beneficiary_required_details(
-                currency='GBP',
-                bank_account_country='GB',
-                beneficiary_country='GB'
+    async def test_reference_can_retrieve_beneficiary_required_details(self) -> None:
+        with my_vcr.use_cassette("reference/can_retrieve_beneficiary_required_details.json"):
+            details = await self.client.reference.beneficiary_required_details(
+                currency="GBP", bank_account_country="GB", beneficiary_country="GB"
             )
 
             assert len(details) > 0
@@ -29,8 +34,8 @@ class TestReference:
             details = details[0]
 
             assert isinstance(details, BeneficiaryRequiredDetails)
-            assert details.beneficiary_entity_type == 'individual'
-            assert details.payment_type == 'priority'
+            assert details.beneficiary_entity_type == "individual"
+            assert details.payment_type == "priority"
             assert details.beneficiary_address == "^.{1,255}"
             assert details.beneficiary_city == "^.{1,255}"
             assert details.beneficiary_country == "^[A-z]{2}$"
@@ -39,39 +44,37 @@ class TestReference:
             assert details.acct_number == "^[0-9A-Z]{1,50}$"
             assert details.sort_code == "^\\d{6}$"
 
-    def test_reference_can_retrieve_conversion_dates(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('reference/can_retrieve_conversion_dates')
-
-            dates = self.client.reference.conversion_dates(conversion_pair='GBPUSD')
+    async def test_reference_can_retrieve_conversion_dates(self) -> None:
+        with my_vcr.use_cassette("reference/can_retrieve_conversion_dates.json"):
+            dates = await self.client.reference.conversion_dates(
+                conversion_pair="GBPUSD"
+            )
 
             assert isinstance(dates, ConversionDates)
             assert dates.first_conversion_date
             assert dates.default_conversion_date
             assert dates.first_conversion_cutoff_datetime
             assert dates.optimize_liquidity_conversion_date
-            assert 'No trading on Saturday' in dates.invalid_conversion_dates.values()  # noqa
+            assert "No trading on Saturday" in dates.invalid_conversion_dates.values()
 
-    def test_reference_can_retrieve_currencies(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('reference/can_retrieve_currencies')
-
-            currencies = self.client.reference.currencies()
+    async def test_reference_can_retrieve_currencies(self) -> None:
+        with my_vcr.use_cassette("reference/can_retrieve_currencies.json"):
+            currencies = await self.client.reference.currencies()
 
             assert len(currencies) > 0
 
             currency = currencies[0]
 
             assert isinstance(currency, Currency)
-            assert currency.code == 'AED'
-            assert currency.name == 'United Arab Emirates Dirham'
+            assert currency.code == "AED"
+            assert currency.name == "United Arab Emirates Dirham"
             assert currency.decimal_places == 2
 
-    def test_reference_can_retrieve_settlement_accounts(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('reference/can_retrieve_settlement_accounts')
-
-            settlement_accounts = self.client.reference.settlement_accounts(currency='GBP')
+    async def test_reference_can_retrieve_settlement_accounts(self) -> None:
+        with my_vcr.use_cassette("reference/can_retrieve_settlement_accounts.json"):
+            settlement_accounts = await self.client.reference.settlement_accounts(
+                currency="GBP"
+            )
 
             assert len(settlement_accounts) > 0
 
@@ -79,57 +82,60 @@ class TestReference:
 
             assert isinstance(settlement_account, SettlementAccount)
             assert settlement_account.bank_name
-            assert 'The Currency Cloud GBP' in settlement_account.bank_account_holder_name  # noqa
+            assert (
+                "The Currency Cloud GBP" in settlement_account.bank_account_holder_name
+            )
 
-    def test_reference_can_retrieve_payer_required_details(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('reference/can_retrieve_payer_required_details')
-
-            details = self.client.reference.payer_required_details(payer_country='GB')
+    async def test_reference_can_retrieve_payer_required_details(self) -> None:
+        with my_vcr.use_cassette("reference/can_retrieve_payer_required_details.json"):
+            details = await self.client.reference.payer_required_details(
+                payer_country="GB"
+            )
 
             assert len(details) > 0
 
             details = details[0]
 
             assert isinstance(details, PayerRequiredDetails)
-            assert details.payer_entity_type == 'company'
-            assert details.payment_type == 'priority'
-            assert details.payer_identification_type == 'incorporation_number'
-            assert details.required_fields[0]["name"] == 'payer_country'
-            assert details.required_fields[0]["validation_rule"] == '^[A-z]{2}$'
-            assert details.required_fields[1]["name"] == 'payer_city'
-            assert details.required_fields[1]["validation_rule"] == '^.{1,255}'
-            assert details.required_fields[2]["name"] == 'payer_address'
-            assert details.required_fields[2]["validation_rule"] == '^.{1,255}'
-            assert details.required_fields[3]["name"] == 'payer_company_name'
-            assert details.required_fields[3]["validation_rule"] == '^.{1,255}'
-            assert details.required_fields[4]["name"] == 'payer_identification_value'
-            assert details.required_fields[4]["validation_rule"] == '^.{1,255}'
+            assert details.payer_entity_type == "company"
+            assert details.payment_type == "priority"
+            assert details.payer_identification_type == "incorporation_number"
+            assert details.required_fields[0]["name"] == "payer_country"
+            assert details.required_fields[0]["validation_rule"] == "^[A-z]{2}$"
+            assert details.required_fields[1]["name"] == "payer_city"
+            assert details.required_fields[1]["validation_rule"] == "^.{1,255}"
+            assert details.required_fields[2]["name"] == "payer_address"
+            assert details.required_fields[2]["validation_rule"] == "^.{1,255}"
+            assert details.required_fields[3]["name"] == "payer_company_name"
+            assert details.required_fields[3]["validation_rule"] == "^.{1,255}"
+            assert details.required_fields[4]["name"] == "payer_identification_value"
+            assert details.required_fields[4]["validation_rule"] == "^.{1,255}"
 
-    def test_reference_can_retrieve_payment_purpose_codes(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('reference/can_retrieve_payment_purpose_codes')
-
-            details = self.client.reference.payment_purpose_codes(currency='CNY')
+    async def test_reference_can_retrieve_payment_purpose_codes(self) -> None:
+        with my_vcr.use_cassette("reference/can_retrieve_payment_purpose_codes.json"):
+            details = await self.client.reference.payment_purpose_codes(currency="CNY")
             assert len(details) > 0
 
             purpose_code = details[0]
             assert isinstance(purpose_code, PaymentPurposeCode)
 
-            assert purpose_code.currency == 'CNY'
-            assert purpose_code.entity_type == 'company'
-            assert purpose_code.purpose_code == 'current_account_payment'
+            assert purpose_code.currency == "CNY"
+            assert purpose_code.entity_type == "company"
+            assert purpose_code.purpose_code == "current_account_payment"
 
-    def test_reference_can_retrieve_bank_details(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('reference/can_retrieve_bank_details')
-
-            details = self.client.reference.bank_details(identifier_type="iban", identifier_value="GB19TCCL00997901654515")
+    async def test_reference_can_retrieve_bank_details(self) -> None:
+        with my_vcr.use_cassette("reference/can_retrieve_bank_details.json"):
+            details = await self.client.reference.bank_details(
+                identifier_type="iban", identifier_value="GB19TCCL00997901654515"
+            )
 
             assert isinstance(details, BankDetails)
 
             assert details.account_number == "GB19TCCL00997901654515"
-            assert details.bank_address == "12 STEWARD STREET  THE STEWARD BUILDING FLOOR 0"
+            assert (
+                details.bank_address
+                == "12 STEWARD STREET  THE STEWARD BUILDING FLOOR 0"
+            )
             assert details.bank_branch == ""
             assert details.bank_city == "LONDON"
             assert details.bank_country == "UNITED KINGDOM"
@@ -142,11 +148,9 @@ class TestReference:
             assert details.identifier_type == "iban"
             assert details.identifier_value == "GB19TCCL00997901654515"
 
-    def test_reference_can_retrieve_payment_fee_rules(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('reference/can_retrieve_payment_fee_rules')
-
-            payment_fee_rules1 = self.client.reference.payment_fee_rules()
+    async def test_reference_can_retrieve_payment_fee_rules(self) -> None:
+        with my_vcr.use_cassette("reference/can_retrieve_payment_fee_rules.json"):
+            payment_fee_rules1 = await self.client.reference.payment_fee_rules()
             assert len(payment_fee_rules1) == 3
 
             fee_rule1_1 = payment_fee_rules1[0]
@@ -170,7 +174,9 @@ class TestReference:
             assert fee_rule1_3.fee_currency == "GBP"
             assert fee_rule1_3.payment_type == "priority"
 
-            payment_fee_rules2 = self.client.reference.payment_fee_rules(payment_type='regular')
+            payment_fee_rules2 = await self.client.reference.payment_fee_rules(
+                payment_type="regular"
+            )
             assert len(payment_fee_rules2) == 1
 
             fee_rule2_1 = payment_fee_rules2[0]
@@ -180,7 +186,9 @@ class TestReference:
             assert fee_rule2_1.fee_currency == "USD"
             assert fee_rule2_1.payment_type == "regular"
 
-            payment_fee_rules3 = self.client.reference.payment_fee_rules(charge_type='ours')
+            payment_fee_rules3 = await self.client.reference.payment_fee_rules(
+                charge_type="ours"
+            )
             assert len(payment_fee_rules3) == 1
 
             fee_rule3_1 = payment_fee_rules3[0]
@@ -189,4 +197,3 @@ class TestReference:
             assert fee_rule3_1.fee_amount == "5.25"
             assert fee_rule3_1.fee_currency == "GBP"
             assert fee_rule3_1.payment_type == "priority"
-

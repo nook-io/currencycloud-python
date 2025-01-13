@@ -1,91 +1,119 @@
-'''This module provides a Mixin to generate http requests to the CC API endpoints'''
+"""This module provides a Mixin to generate http requests to the CC API endpoints"""
 
-from currencycloud.errors import *
+from typing import TYPE_CHECKING, Any, Awaitable, Callable
+
+from httpx import Response
+from httpx._types import HeaderTypes, QueryParamTypes, RequestData
+from httpx._urls import URL
+
+from currencycloud.errors import (
+    ApiError,
+    AuthenticationError,
+    BadRequestError,
+    ForbiddenError,
+    InternalApplicationError,
+    NotFoundError,
+    TooManyRequestsError,
+)
 from currencycloud.version import VERSION
 
-class Http(object):
-    '''
+if TYPE_CHECKING:
+    from currencycloud.config import Config
+
+
+class Http:
+    """
     Mixin for other Client classes. Provides abstract get/post methods that will add authentication
     headers when necessary and point to the appropriate host for the environment.
-    '''
+    """
 
-    USER_AGENT = "CurrencyCloudSDK/2.0 Python/" + VERSION
-
-    def __init__(self, config):
+    def __init__(self, config: "Config"):
         self.config = config
         self.session = self.config.session
 
-    def get(self, endpoint, query=None, authenticated=True, retry=True):
-        '''Executes a GET request.'''
+    async def get(
+        self,
+        endpoint: str,
+        query: dict[str, Any] | None = None,
+        authenticated: bool = True,
+        retry: bool = True,
+    ) -> dict[str, Any]:
+        """Executes a GET request."""
 
         url = self.__build_url(endpoint)
         query = self.__encode_arrays(self.__handle_on_behalf_of(query))
-        headers = self.__build_headers(authenticated)
+        headers = await self.__build_headers(authenticated)
 
-        def execute_request(url, headers, data):
-            return self.session.get(url, headers=headers, params=data)
+        async def execute_request(
+            url: URL | str, headers: HeaderTypes, data: QueryParamTypes
+        ):
+            return await self.session.get(url, headers=headers, params=data)
 
-        response = self.__handle_authentication_errors(execute_request,
-                                                       retry,
-                                                       url,
-                                                       headers,
-                                                       query,
-                                                       authenticated)
+        response = await self.__handle_authentication_errors(
+            execute_request, retry, url, headers, query, authenticated
+        )
 
-        return self.__handle_errors('get', url, query, response)
+        return self.__handle_errors("get", url, query, response)
 
-    def post(self, endpoint, data, authenticated=True, retry=True):
-        '''Executes a POST request.'''
+    async def post(
+        self,
+        endpoint: str,
+        data: dict[str, Any] | None,
+        authenticated: bool = True,
+        retry: bool = True,
+        disable_on_behalf_of: bool=False
+    ) -> dict[str, Any]:
+        """Executes a POST request."""
 
         url = self.__build_url(endpoint)
-        data = self.__encode_arrays(self.__handle_on_behalf_of(data))
-        headers = self.__build_headers(authenticated)
+        if not disable_on_behalf_of:
+            data = self.__handle_on_behalf_of(data)
+        data = self.__encode_arrays(data)
+        headers = await self.__build_headers(authenticated)
 
-        def execute_request(url, headers, data):
-            return self.session.post(url, headers=headers, data=data)
+        async def execute_request(
+            url: URL | str, headers: HeaderTypes, data: RequestData
+        ) -> Response:
+            return await self.session.post(url, headers=headers, data=data)
 
-        response = self.__handle_authentication_errors(execute_request,
-                                                       retry,
-                                                       url,
-                                                       headers,
-                                                       data,
-                                                       authenticated)
+        response = await self.__handle_authentication_errors(
+            execute_request, retry, url, headers, data, authenticated
+        )
 
-        return self.__handle_errors('post', url, data, response)
+        return self.__handle_errors("post", url, data, response)
 
-    def __build_url(self, endpoint):
+    def __build_url(self, endpoint: str) -> str:
         return self.__environment_url() + endpoint
 
-    def __environment_url(self):
+    def __environment_url(self) -> str:
         return self.config.environment_url()
 
-    def __handle_on_behalf_of(self, data):
+    def __handle_on_behalf_of(self, data: dict[str, Any] | None):
         if self.config.on_behalf_of is not None:
             data = {} if data is None else data
 
-            if 'on_behalf_of' not in data:
-                data['on_behalf_of'] = self.config.on_behalf_of
+            if "on_behalf_of" not in data:
+                data["on_behalf_of"] = self.config.on_behalf_of
 
         return data
 
-    def __encode_arrays(self, data):
+    def __encode_arrays(self, data: dict[str, Any] | None) -> dict[str, Any] | None:
         if data is not None:
             new_data = {}
 
             for k in data:
                 if isinstance(data[k], list):
-                    new_data[k + '[]'] = data[k]
+                    new_data[k + "[]"] = data[k]
                 else:
                     new_data[k] = data[k]
 
             return new_data
 
-    def __build_headers(self, authenticated):
-
-        headers = {"User-Agent":self.USER_AGENT}
+    async def __build_headers(self, authenticated: bool) -> dict[str, str]:
+        headers = {}
 
         if authenticated:
-            headers["X-Auth-Token"] = self.config.auth_token
+            headers["X-Auth-Token"] = await self.config.get_auth_token()
 
         return headers
 
@@ -95,28 +123,40 @@ class Http(object):
         403: ForbiddenError,
         404: NotFoundError,
         429: TooManyRequestsError,
-        500: InternalApplicationError
+        500: InternalApplicationError,
     }
 
-    def __handle_errors(self, verb, url, params, response):
+    def __handle_errors(
+        self, verb: str, url: str, params, response: Response
+    ) -> dict[str, Any]:
         if int(response.status_code / 100) == 2:
             return response.json()
-        else:
-            klass = Http.HTTP_CODE_TO_ERROR.get(response.status_code, ApiError)
-            raise klass(verb, url, params, response)
+        klass = Http.HTTP_CODE_TO_ERROR.get(response.status_code, ApiError)
+        raise klass(verb, url, params, response)
 
-    def __handle_authentication_errors(self, execute_request, retry, url, headers, data, authenticated):
+    async def __handle_authentication_errors(
+        self,
+        execute_request: Callable[
+            [URL | str, HeaderTypes, QueryParamTypes], Awaitable[Response]
+        ]
+        | Callable[[URL | str, HeaderTypes, RequestData], Awaitable[Response]],
+        retry: bool,
+        url: str,
+        headers: dict[str, str],
+        data,
+        authenticated: bool,
+    ) -> Response:
         retry_count = 3 if retry else 1
 
         while retry_count:
             retry_count -= 1
-            response = execute_request(url, headers, data)
+            response = await execute_request(url, headers, data)
 
             if response.status_code != 401:
                 return response
 
             if retry:
-                self.config.reauthenticate()
-                headers = self.__build_headers(authenticated)
+                await self.config.reauthenticate()
+                headers = await self.__build_headers(authenticated)
 
         return response

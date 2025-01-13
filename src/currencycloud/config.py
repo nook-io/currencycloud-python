@@ -1,83 +1,81 @@
-'''This module provides a Client class for authentication related calls to the CC API'''
+"""This module provides a Client class for authentication related calls to the CC API"""
+
+from typing import Awaitable, Callable, Literal
+
+import httpx
 
 from currencycloud.clients.auth import Auth
-import uuid
-import requests
 
 
-class Config(object):
-    '''API Configuration Object. Keeps track of Credentials, Auth Token and API Environment'''
+class Config:
+    """API Configuration Object. Keeps track of Credentials, Auth Token and API Environment"""
 
-    _auth_token = None
-    _on_behalf_of = None
+    auth_token: str | None = None
 
-    ENV_PROD = 'prod'
-    ENV_DEMO = 'demo'
+    ENV_PROD = "prod"
+    ENV_DEMO = "demo"
 
     ENVIRONMENT_URLS = {
-        ENV_PROD: 'https://api.currencycloud.com',
-        ENV_DEMO: 'https://devapi.currencycloud.com',
+        ENV_PROD: "https://api.currencycloud.com",
+        ENV_DEMO: "https://devapi.currencycloud.com",
     }
+    _session: httpx.AsyncClient | None = None
 
-    def __init__(self, login_id, api_key, environment='demo'):
+    def __init__(
+        self,
+        login_id: str,
+        api_key: str,
+        environment: Literal["prod", "demo"] = ENV_DEMO,
+        token_getter: Callable[[], Awaitable[str]] | None = None,
+        client: httpx.AsyncClient | None = None,
+    ):
         self.login_id = login_id
         self.api_key = api_key
         self.environment = environment
-        self.session = requests.Session()
+        self.on_behalf_of: str | None = None
+        self.token_getter = token_getter
+        self.auth_token: str | None = None
+        if client is not None:
+            self._session = client
 
         super(Config, self).__init__()
-
+    
     @property
-    def auth_token(self):
-        '''Getter for the Auth Token. Generates one if there is None.'''
-        if self._auth_token is None:
+    def session(self) -> httpx.AsyncClient:
+        if self._session is None:
+            Config._session = httpx.AsyncClient()
+        assert self._session is not None
+        return self._session
+        
+
+    async def get_auth_token(self) -> str:
+        """Getter for the Auth Token. Generates one if there is None."""
+        if self.auth_token is None:
             if self.login_id is None:
-                raise RuntimeError('login_id must be set')
+                raise RuntimeError("login_id must be set")
             if self.api_key is None:
-                raise RuntimeError('api_key must be set')
+                raise RuntimeError("api_key must be set")
 
-            self._auth_token = Auth(self).authenticate()['auth_token']
+            if self.token_getter is not None:
+                self.auth_token = await self.token_getter()
+            else:
+                await self.reauthenticate()
 
-        return self._auth_token
+        assert self.auth_token is not None
+        return self.auth_token
 
-    @auth_token.setter
-    def auth_token(self, value):
-        '''Getter for the Auth Token. Generates one if there is None.'''
-        self._auth_token = value
-        return self._auth_token
-
-    @property
-    def on_behalf_of(self):
-        '''Getter for the on_behalf_of token.'''
-        return self._on_behalf_of
-
-    @on_behalf_of.setter
-    def on_behalf_of(self, value):
-        if value is None or self.__valid_uuid(value):
-            self._on_behalf_of = value
-            return self._on_behalf_of
-        else:
-            raise ValueError('Invalid UUIDv4 for on_behalf_of contact_id.')
-
-    def reauthenticate(self):
-        '''Force generation of a new auth token'''
+    async def reauthenticate(self) -> None:
+        """Force generation of a new auth token"""
 
         if self.login_id is None:
-            raise RuntimeError('login_id must be set')
+            raise RuntimeError("login_id must be set")
         if self.api_key is None:
-            raise RuntimeError('api_key must be set')
+            raise RuntimeError("api_key must be set")
 
-        self._auth_token = Auth(self).authenticate()['auth_token']
+        self.auth_token = (await Auth(self).authenticate())["auth_token"]
 
-    def __valid_uuid(self, value):
-        try:
-            val = uuid.UUID(value, version=4)
-        except ValueError:
-            return False
-        return str(val) == value
-
-    def environment_url(self):
+    def environment_url(self) -> str:
         if self.environment not in self.ENVIRONMENT_URLS:
-            raise RuntimeError('%s is not a valid environment name' % self.environment)
+            raise RuntimeError("%s is not a valid environment name" % self.environment)
 
         return self.ENVIRONMENT_URLS[self.environment]

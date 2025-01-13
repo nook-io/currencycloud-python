@@ -1,25 +1,22 @@
-from betamax import Betamax
-
 from currencycloud import Client, Config
-from currencycloud.resources import *
+from currencycloud.resources import Rate
+
+from tests.integration.conftest import my_vcr
 
 
 class TestRates:
-
-    def setup_method(self, method):
+    def setup_method(self, method) -> None:
         # TODO: To run against real server please delete ../fixtures/vcr_cassettes/* and replace
         # login_id and api_key with valid credentials before running the tests
-        login_id = 'development@currencycloud.com'
-        api_key = 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef'
+        login_id = "development@currencycloud.com"
+        api_key = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
         environment = Config.ENV_DEMO
 
         self.client = Client(login_id, api_key, environment)
 
-    def test_rates_can_find(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('rates/can_find')
-
-            rates = self.client.rates.find(currency_pair="GBPUSD,EURGBP")
+    async def test_rates_can_find(self) -> None:
+        with my_vcr.use_cassette("rates/can_find.json"):
+            rates = await self.client.rates.find(currency_pair="GBPUSD,EURGBP")
 
             assert rates is not None
             assert rates.currencies
@@ -36,40 +33,36 @@ class TestRates:
 
                 currency_pairs.append(currency.currency_pair)
 
-            assert 'EURGBP' in currency_pairs
+            assert "EURGBP" in currency_pairs
 
             rate = currencies[0]
 
             assert rate.bid
             assert rate.offer
 
-    def test_rates_can_provide_detailed_rate(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('rates/can_provide_detailed_rate')
-
-            detailed_rate = self.client.rates.detailed(
-                buy_currency="GBP",
-                sell_currency="USD",
-                fixed_side='buy',
-                amount=10000
+    async def test_rates_can_provide_detailed_rate(self) -> None:
+        with my_vcr.use_cassette("rates/can_provide_detailed_rate.json"):
+            detailed_rate = await self.client.rates.detailed(
+                buy_currency="GBP", sell_currency="USD", fixed_side="buy", amount=10000
             )
 
             assert isinstance(detailed_rate, Rate)
             assert isinstance(float(detailed_rate.client_sell_amount), float)
 
-    def test_rates_can_provide_detailed_rate_with_conversion_date_preference(self):
-        with Betamax(self.client.config.session) as betamax:
-            betamax.use_cassette('rates/can_provide_detailed_rate_with_conversion_date_preference')
-
-            detailed_rate = self.client.rates.detailed(
+    async def test_rates_can_provide_detailed_rate_with_conversion_date_preference(
+        self,
+    ) -> None:
+        with my_vcr.use_cassette(
+            "rates/can_provide_detailed_rate_with_conversion_date_preference"
+        ):
+            detailed_rate = await self.client.rates.detailed(
                 buy_currency="GBP",
                 sell_currency="USD",
-                fixed_side='buy',
+                fixed_side="buy",
                 amount=10000,
-                conversion_date_preference="optimize_liquidity"
+                conversion_date_preference="optimize_liquidity",
             )
 
             assert isinstance(detailed_rate, Rate)
             assert detailed_rate.client_sell_amount == "14081.00"
             assert detailed_rate.settlement_cut_off_time == "2020-05-21T14:00:00Z"
-

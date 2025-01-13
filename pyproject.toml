@@ -1,0 +1,30 @@
+[project]
+name = "currencycloud"
+version = "0.1.0"
+description = "Async Python SDK for the Currencycloud API"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["httpx>=0.20.0", "pyyaml==6.0.1"]
+license = "MIT"
+authors = [{ name = "Johnny Deuss", email = "johnny@nook.io" }]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "mock==3.0.5",
+    "pytest-asyncio>=0.25.2",
+    "pytest>=6.0.0",
+    "vcrpy==6.0.2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/currencycloud"]
+only-packages = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"

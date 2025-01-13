@@ -1,5 +1,7 @@
+from json import JSONDecodeError
 import platform
 import sys
+from httpx import Response
 import yaml
 
 
@@ -9,26 +11,24 @@ def extract_error_code(errors):
 
 def extract_error_messages(errors):
     error_messages = []
-    if "error_messages" in errors and hasattr( errors["error_messages"], "items" ):
+    if "error_messages" in errors and hasattr(errors["error_messages"], "items"):
         for field, messages in errors["error_messages"].items():
             if isinstance(messages, list):
                 for message in messages:
-                    error_messages.append(
-                        ApiError.ApiErrorMessage(
-                            field,
-                            message))
+                    error_messages.append(ApiError.ApiErrorMessage(field, message))
             else:
-                error_messages.append(
-                    ApiError.ApiErrorMessage(
-                        field,
-                        messages))
+                error_messages.append(ApiError.ApiErrorMessage(field, messages))
     else:
         error_messages.append(
             ApiError.ApiErrorMessage(
                 "unknown",
-                {"code": "unknown_error",
-                 "message": "Unhandled Error occurred. Check params for details",
-                 "params": errors}))
+                {
+                    "code": "unknown_error",
+                    "message": "Unhandled Error occurred. Check params for details",
+                    "params": errors,
+                },
+            )
+        )
     return error_messages
 
 
@@ -37,7 +37,10 @@ VALUES_TO_REDACT = ["api_key"]
 
 
 def redact_values(params):
-    return {i: REDACTED_STRING if i in VALUES_TO_REDACT else params[i] for i in params.keys()}
+    return {
+        i: REDACTED_STRING if i in VALUES_TO_REDACT else params[i]
+        for i in params.keys()
+    }
 
 
 class ApiError(Exception):
@@ -50,13 +53,13 @@ class ApiError(Exception):
 
         def to_h(self):
             return {
-                'field': self.field,
-                'code': self.code,
-                'message': self.message,
-                'params': self.params,
+                "field": self.field,
+                "code": self.code,
+                "message": self.message,
+                "params": self.params,
             }
 
-    def __init__(self, verb, route, params, response):
+    def __init__(self, verb: str, route: str, params, response: Response) -> None:
         super(ApiError, self).__init__()
 
         self.verb = verb
@@ -70,41 +73,43 @@ class ApiError(Exception):
         self.messages = []
 
         if response is not None:
-            errors = response.json()
-            self.code = extract_error_code(errors)
-            self.messages = extract_error_messages(errors)
-
+            try:
+                errors = response.json()
+            except JSONDecodeError:
+                pass
+            else:
+                self.code = extract_error_code(errors)
+                self.messages = extract_error_messages(errors)
 
     @property
     def platform(self):
-        return 'python - {version} - {implementation}'.format(
-            version=sys.version.split('\n')[0].strip(),
-            implementation=platform.python_implementation())
+        return "python - {version} - {implementation}".format(
+            version=sys.version.split("\n")[0].strip(),
+            implementation=platform.python_implementation(),
+        )
 
     def __str__(self):
         class_name = self.__class__.__name__
 
         error_details = {
-            'platform': self.platform,
-            'request': {
-                'parameters': redact_values(self.params),
-                'verb': str(
-                    self.verb),
-                'url': self.route,
+            "platform": self.platform,
+            "request": {
+                "parameters": redact_values(self.params),
+                "verb": str(self.verb),
+                "url": self.route,
             },
-            'response': {
-                'status_code': self.status_code,
-                'date': self.raw_response.headers['Date'],
-                'request_id': self.raw_response.headers.get('x-request-id')
+            "response": {
+                "status_code": self.status_code,
+                "date": self.raw_response.headers["Date"],
+                "request_id": self.raw_response.headers.get("x-request-id"),
             },
-            'errors': [
-                m.to_h() for m in self.messages],
+            "errors": [m.to_h() for m in self.messages],
         }
 
         return "{class_name}\n{separator}\n{dump}\n".format(
             class_name=class_name,
             separator="---",
-            dump=yaml.safe_dump(error_details, default_flow_style=False)
+            dump=yaml.safe_dump(error_details, default_flow_style=False),
         )
 
 
