@@ -49,3 +49,5 @@ from currencycloud.resources.withdrawal_account import (
 from currencycloud.resources.withdrawal_account import (
     WithdrawalAccountFunds as WithdrawalAccountFunds,
 )
+from currencycloud.resources.demo import SimulateFunding as SimulateFunding
+from currencycloud.resources.payment import PaymentValidation as PaymentValidation
