@@ -60,12 +60,12 @@ class Client(Http):
         environment: Literal["demo", "prod"] = Config.ENV_DEMO,
         token_getter: Callable[[], Awaitable[str]] | None = None,
         client: httpx.AsyncClient | None = None,
-    ):
+    ) -> None:
         config = Config(login_id, api_key, environment, token_getter=token_getter, client=client)
         super().__init__(config)
 
     @classmethod
-    def with_config(cls, config):
+    def with_config(cls, config) -> "Client":
         """Instantiate a new Client using a config instance"""
         return cls(config.login_id, config.api_key, config.environment)
 
@@ -73,11 +73,10 @@ class Client(Http):
         """Generate an auth token and store it in the config."""
         await self.config.get_auth_token()
 
-    async def close_session(self):
+    async def close_session(self) -> None:
         """Terminate the Auth Token validity"""
         await self.auth.close_session()
         self.config.auth_token = None
-        return True
 
     @contextmanager
     def on_behalf_of(self, uuid) -> Generator["Client", None, None]:
@@ -103,7 +102,7 @@ class Client(Http):
         yield clone
 
     @property
-    def auth(self):
+    def auth(self) -> Auth:
         """Get the Authentication client."""
         if self._auth_client is None:
             self._auth_client = Auth(self.config)
@@ -159,7 +158,7 @@ class Client(Http):
         return self._ibans_client
 
     @property
-    def payers(self):
+    def payers(self) -> Payers:
         """Get the Payers client."""
         if self._payers_client is None:
             self._payers_client = Payers(self.config)
@@ -173,14 +172,14 @@ class Client(Http):
         return self._payments_client
 
     @property
-    def rates(self):
+    def rates(self) -> Rates:
         """Get the Rates client."""
         if self._rates_client is None:
             self._rates_client = Rates(self.config)
         return self._rates_client
 
     @property
-    def reference(self):
+    def reference(self) -> Reference:
         """Get the Reference client."""
         if self._reference_client is None:
             self._reference_client = Reference(self.config)

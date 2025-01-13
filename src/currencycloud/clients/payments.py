@@ -30,34 +30,34 @@ class Payments(Http):
         """
         return Payment(**await self.post("/v2/payments/create", kwargs))
 
-    async def delete(self, resource_id: str, **kwargs: Any):
+    async def delete(self, resource_id: str, **kwargs: Any) -> Payment:
         """
         Delete a previously created payment and returns a hash containing the details of the
         deleted payment.
         """
         return Payment(**await self.post("/v2/payments/" + resource_id + "/delete", kwargs))
 
-    async def find(self, **kwargs: Any):
+    async def find(self, **kwargs: Any) -> PaginatedCollection[Payment]:
         """Returns an Array of Payment objects matching the search criteria."""
         response = await self.get("/v2/payments/find", query=kwargs)
         data = [Payment(**fields) for fields in response["payments"]]
         return PaginatedCollection(data, response["pagination"])
 
-    async def first(self, **params: Any):
+    async def first(self, **params: Any) -> Payment:
         params["per_page"] = 1
         return (await self.find(**params))[0]
 
-    async def retrieve(self, resource_id: str, **kwargs: Any):
+    async def retrieve(self, resource_id: str, **kwargs: Any) -> Payment:
         """Returns a hash containing the details of the requested payment."""
         return Payment(**await self.get("/v2/payments/" + resource_id, query=kwargs))
 
-    async def retrieve_submission(self, resource_id: str, **kwargs: Any):
+    async def retrieve_submission(self, resource_id: str, **kwargs: Any) -> dict[str, Any]:
         """
         Returns a hash containing the details of MT103 information for a SWIFT submitted payment.
         """
-        return self.get("/v2/payments/" + resource_id + "/submission", query=kwargs)
+        return await self.get("/v2/payments/" + resource_id + "/submission", query=kwargs)
 
-    async def update(self, resource_id: str, **kwargs: Any):
+    async def update(self, resource_id: str, **kwargs: Any) -> Payment:
         """
         Edits a previously created payment and returns a hash containing the details of the edited
         payment.
@@ -71,13 +71,13 @@ class Payments(Http):
         """
         return Payment(**await self.post("/v2/payments/" + resource_id, kwargs))
 
-    async def payment_confirmation(self, resource_id: str, **kwargs: Any):
+    async def payment_confirmation(self, resource_id: str, **kwargs: Any) -> Payment:
         """
         Get confirmation for a payment.
         """
         return Payment(**await self.get("/v2/payments/" + resource_id + "/confirmation", kwargs))
 
-    async def authorise(self, **kwargs: Any):
+    async def authorise(self, **kwargs: Any) -> Payment:
         """
         Authorise pending payment(s) and returns a hash containing the details of the payment authorisation.
         """

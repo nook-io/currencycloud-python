@@ -22,7 +22,7 @@ class Transfers(Http):
         data = [Transfer(**fields) for fields in response["transfers"]]
         return PaginatedCollection(data, response["pagination"])
 
-    async def first(self, **params: Any):
+    async def first(self, **params: Any) -> Transfer:
         params["per_page"] = 1
         return (await self.find(**params))[0]
 
