@@ -20,13 +20,8 @@ class TestConfig:
         assert self.client.config.login_id == "development@currencycloud.com"
 
     def test_api_key(self):
-        self.client.config.api_key = (
-            "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-        )
-        assert (
-            self.client.config.api_key
-            == "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-        )
+        self.client.config.api_key = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+        assert self.client.config.api_key == "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
 
     def test_session_returns_session_object(self):
         assert isinstance(self.client.config, currencycloud.Config)
@@ -64,13 +59,8 @@ class TestConfig:
         assert "api_key must be set" in str(excinfo.value)
 
     def test_session_on_behalf_of_sets_removes_value(self):
-        with self.client.on_behalf_of(
-            "c6ece846-6df1-461d-acaa-b42a6aa74045"
-        ) as behalf_client:
-            assert (
-                behalf_client.config.on_behalf_of
-                == "c6ece846-6df1-461d-acaa-b42a6aa74045"
-            )
+        with self.client.on_behalf_of("c6ece846-6df1-461d-acaa-b42a6aa74045") as behalf_client:
+            assert behalf_client.config.on_behalf_of == "c6ece846-6df1-461d-acaa-b42a6aa74045"
 
         assert self.client.config.on_behalf_of is None
 

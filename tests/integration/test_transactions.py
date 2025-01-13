@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import Transaction
-
 from tests.integration.conftest import my_vcr
 
 
@@ -16,9 +15,7 @@ class TestTransactions:
 
     async def test_transactions_can_find(self) -> None:
         with my_vcr.use_cassette("transactions/can_find.json"):
-            transactions = await self.client.transactions.find(
-                currency="GBP", per_page=1
-            )
+            transactions = await self.client.transactions.find(currency="GBP", per_page=1)
 
             assert len(transactions) == 1
 
@@ -30,8 +27,6 @@ class TestTransactions:
 
     async def test_transactions_can_retrieve(self) -> None:
         with my_vcr.use_cassette("transactions/can_retrieve.json"):
-            transaction = await self.client.transactions.retrieve(
-                "da45e164-620a-47e7-80a6-2e66d5919276"
-            )
+            transaction = await self.client.transactions.retrieve("da45e164-620a-47e7-80a6-2e66d5919276")
             assert transaction is not None
             assert transaction.currency == "GBP"

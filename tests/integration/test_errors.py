@@ -1,6 +1,8 @@
 import datetime
 from json import JSONDecodeError
 
+from httpx import Response
+
 from currencycloud import Client, Config
 from currencycloud.errors import (
     ApiError,
@@ -11,7 +13,6 @@ from currencycloud.errors import (
     TooManyRequestsError,
 )
 from currencycloud.errors.api import REDACTED_STRING
-
 from tests.integration.conftest import my_vcr
 
 
@@ -68,9 +69,7 @@ class TestError:
         api_key = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
         tmp_client = Client(login_id, api_key, Config.ENV_DEMO)
 
-        with my_vcr.use_cassette(
-            "errors/is_raised_on_incorrect_authentication_details"
-        ):
+        with my_vcr.use_cassette("errors/is_raised_on_incorrect_authentication_details"):
             error = None
             try:
                 await tmp_client.auth.authenticate()
@@ -86,19 +85,14 @@ class TestError:
             error_message = error.messages[0]
             assert error_message.field == "username"
             assert error_message.code == "invalid_supplied_credentials"
-            assert (
-                error_message.message
-                == "Authentication failed with the supplied credentials"
-            )
+            assert error_message.message == "Authentication failed with the supplied credentials"
             assert not error_message.params
 
     async def test_error_is_raised_when_a_resource_is_not_found(self) -> None:
         with my_vcr.use_cassette("errors/is_raised_when_a_resource_is_not_found.json"):
             error = None
             try:
-                await self.client.beneficiaries.retrieve(
-                    "081596c9-02de-483e-9f2a-4cf55dcdf98c"
-                )
+                await self.client.beneficiaries.retrieve("081596c9-02de-483e-9f2a-4cf55dcdf98c")
                 raise Exception("Should have failed")
             except NotFoundError as e:
                 error = e
@@ -114,12 +108,8 @@ class TestError:
             assert error_message.message == "Beneficiary was not found for this id"
             assert not error_message.params
 
-    async def test_error_is_raised_when_too_many_requests_have_been_issued(
-        self,
-    ) -> None:
-        with my_vcr.use_cassette(
-            "errors/is_raised_when_too_many_requests_have_been_issued"
-        ):
+    async def test_error_is_raised_when_too_many_requests_have_been_issued(self) -> None:
+        with my_vcr.use_cassette("errors/is_raised_when_too_many_requests_have_been_issued"):
             error = None
             try:
                 await self.client.auth.authenticate()
@@ -157,19 +147,14 @@ class TestError:
 
             error_message = error.messages[0]
             assert error_message.code == "permission_denied"
-            assert (
-                error_message.message
-                == "You do not have permission 'transfer_read' to perform this operation"
-            )
+            assert error_message.message == "You do not have permission 'transfer_read' to perform this operation"
             assert not error_message.params
 
     async def test_error_is_raised_on_missing_iban(self) -> None:
         with my_vcr.use_cassette("errors/is_raised_on_missing_iban.json"):
             error = None
             try:
-                await self.client.reference.bank_details(
-                    identifier_type="iban", identifier_value="123abc456xyz"
-                )
+                await self.client.reference.bank_details(identifier_type="iban", identifier_value="123abc456xyz")
                 raise Exception("Should have failed")
             except BadRequestError as e:
                 error = e
@@ -193,9 +178,7 @@ class TestError:
                 pass
 
     async def test_error_is_handled_different_json_format(self) -> None:
-        with my_vcr.use_cassette(
-            "errors/is_handled_json_error_message_different_format"
-        ):
+        with my_vcr.use_cassette("errors/is_handled_json_error_message_different_format"):
             error = None
             try:
                 await self.client.beneficiaries.find()
@@ -210,16 +193,11 @@ class TestError:
 
             error_message = error.messages[0]
             assert error_message.code == "unknown_error"
-            assert (
-                error_message.message
-                == "Unhandled Error occurred. Check params for details"
-            )
+            assert error_message.message == "Unhandled Error occurred. Check params for details"
             assert error_message.params
 
     async def test_error_is_handled_different_json_format_2(self) -> None:
-        with my_vcr.use_cassette(
-            "errors/is_handled_json_error_message_different_format_2"
-        ):
+        with my_vcr.use_cassette("errors/is_handled_json_error_message_different_format_2"):
             error = None
             try:
                 await self.client.beneficiaries.find()
@@ -234,10 +212,7 @@ class TestError:
 
             error_message = error.messages[0]
             assert error_message.code == "unknown_error"
-            assert (
-                error_message.message
-                == "Unhandled Error occurred. Check params for details"
-            )
+            assert error_message.message == "Unhandled Error occurred. Check params for details"
             assert error_message.params
 
     async def test_error_is_handled_missing_params_in_error_message(self) -> None:
@@ -262,12 +237,9 @@ class TestError:
         params = {"api_key": api_key, "login_id": login_id}
         url = "https://devapi.currencycloud.com/v2/authenticate/api"
         verb = "post"
-        response = Response()
-        response.code = "unauthorized"
-        response.error_type = "unauthorized"
-        response.status_code = 401
+        response = Response(status_code=401)
         response._content = b'{"error_code": "auth_failed","error_messages": {"username": [{"code": "invalid_supplied_credentials","message": "Authentication failed with the supplied credentials","params": {}}]}}'
-        response.headers["Date"] = datetime.datetime(2023, 3, 20, 0, 0)
+        response.headers["Date"] = datetime.datetime(2023, 3, 20, 0, 0, tzinfo=datetime.UTC)
         response.headers["x-request-id"] = "06ac2168-8d8f-4a0c-8033-e81a22a2feb5"
 
         error = AuthenticationError(verb, url, params, response)

@@ -13,8 +13,10 @@ __version__ = VERSION
 __license__ = "MIT"
 __copyright__ = "Copyright 2015-2019 Currencycloud"
 
-import yaml
 from decimal import Decimal
+
+import yaml
+
 from currencycloud.errors.api import ApiError
 
 yaml.representer.SafeRepresenter.add_representer(

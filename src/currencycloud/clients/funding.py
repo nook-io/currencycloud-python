@@ -9,9 +9,7 @@ from currencycloud.resources import FundingAccount, PaginatedCollection
 class Funding(Http):
     """This class provides an interface to the Funding endpoints of the CC API"""
 
-    async def find_funding_accounts(
-        self, **kwargs: Any
-    ) -> PaginatedCollection[FundingAccount]:
+    async def find_funding_accounts(self, **kwargs: Any) -> PaginatedCollection[FundingAccount]:
         """
         Return an array containing json structures of details of the funding accounts matching the
         search criteria for the logged in user.

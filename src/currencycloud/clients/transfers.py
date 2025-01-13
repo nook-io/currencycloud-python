@@ -32,6 +32,4 @@ class Transfers(Http):
 
     async def cancel(self, resource_id: str, **kwargs: Any) -> Transfer:
         """Request a transfer to be cancelled. Returns the Transfer object."""
-        return Transfer(
-            **await self.get("/v2/transfers/" + resource_id + "/cancel", query=kwargs)
-        )
+        return Transfer(**await self.get("/v2/transfers/" + resource_id + "/cancel", query=kwargs))

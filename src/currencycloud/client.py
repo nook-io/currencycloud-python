@@ -1,7 +1,8 @@
 """This module provides a Client interface to the CC APIs"""
 
+from collections.abc import Awaitable, Callable, Generator
 from contextlib import contextmanager
-from typing import Awaitable, Callable, Generator, Literal
+from typing import Literal
 
 import httpx
 
@@ -60,9 +61,7 @@ class Client(Http):
         token_getter: Callable[[], Awaitable[str]] | None = None,
         client: httpx.AsyncClient | None = None,
     ):
-        config = Config(
-            login_id, api_key, environment, token_getter=token_getter, client=client
-        )
+        config = Config(login_id, api_key, environment, token_getter=token_getter, client=client)
         super().__init__(config)
 
     @classmethod

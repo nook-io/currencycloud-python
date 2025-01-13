@@ -1,8 +1,8 @@
 import pytest
+
 from currencycloud import Client, Config
 from currencycloud.errors import BadRequestError
 from currencycloud.resources import Beneficiary
-
 from tests.integration.conftest import my_vcr
 
 
@@ -36,9 +36,7 @@ class TestBeneficiaries:
 
     async def test_beneficiaries_can_find(self) -> None:
         with my_vcr.use_cassette("beneficiaries/find.json"):
-            beneficiaries = await self.client.beneficiaries.find(
-                account_number="12345678", per_page=1
-            )
+            beneficiaries = await self.client.beneficiaries.find(account_number="12345678", per_page=1)
 
             assert beneficiaries
             assert len(beneficiaries) == 1
@@ -52,9 +50,7 @@ class TestBeneficiaries:
 
     async def test_beneficiaries_can_retrieve(self) -> None:
         with my_vcr.use_cassette("beneficiaries/retrieve.json"):
-            beneficiary = await self.client.beneficiaries.retrieve(
-                "a0bd2d78-3621-4c29-932f-a39d6b34d5e7"
-            )
+            beneficiary = await self.client.beneficiaries.retrieve("a0bd2d78-3621-4c29-932f-a39d6b34d5e7")
 
             assert beneficiary is not None
             assert isinstance(beneficiary, Beneficiary)
@@ -63,9 +59,7 @@ class TestBeneficiaries:
 
     async def test_beneficiaries_can_update(self) -> None:
         with my_vcr.use_cassette("beneficiaries/update.json"):
-            beneficiary = await self.client.beneficiaries.retrieve(
-                "a0bd2d78-3621-4c29-932f-a39d6b34d5e7"
-            )
+            beneficiary = await self.client.beneficiaries.retrieve("a0bd2d78-3621-4c29-932f-a39d6b34d5e7")
             assert beneficiary is not None
             beneficiary.account_number = "87654321"
 
@@ -88,7 +82,5 @@ class TestBeneficiaries:
     async def test_beneficiaries_validate_raises_on_missing_details(self) -> None:
         with my_vcr.use_cassette("beneficiaries/validate_error.json"):
             with pytest.raises(BadRequestError):
-                await self.client.beneficiaries.validate(
-                    bank_country="GB", currency="GBP", beneficiary_country="GB"
-                )
+                await self.client.beneficiaries.validate(bank_country="GB", currency="GBP", beneficiary_country="GB")
                 raise Exception("Should raise exception")

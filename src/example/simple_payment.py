@@ -41,13 +41,9 @@ async def example() -> None:
     """
     try:
         balance = await client.balances.for_currency("EUR")
-        print("Your Euro balance is: €{0}".format(balance.amount))
+        print(f"Your Euro balance is: €{balance.amount}")
     except ApiError as e:
-        print(
-            "Check Balance encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Check Balance encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     You can also check the balances for all foreign currencies that you hold in your Currencycloud account by calling the
@@ -56,13 +52,9 @@ async def example() -> None:
     try:
         balances = await client.balances.find()
         for element in balances:
-            print("Your {0} balance is {1}".format(element.currency, element.amount))
+            print(f"Your {element.currency} balance is {element.amount}")
     except ApiError as e:
-        print(
-            "Check Balances encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Check Balances encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     3. Check payment requirements
@@ -90,11 +82,7 @@ async def example() -> None:
             print(element + " ", end="")
         print()
     except ApiError as e:
-        print(
-            "Beneficiary Details encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Beneficiary Details encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     The response tells us that, to make a regular payment to a German bank account in Euros, we need two pieces of
@@ -120,19 +108,10 @@ async def example() -> None:
         )
         beneficiary_id = beneficiary.id
         print(
-            "Beneficiary Id {0} for {1}, receiving {2} in {3} created successfully".format(
-                beneficiary_id,
-                beneficiary.name,
-                beneficiary.currency,
-                beneficiary.bank_country,
-            )
+            f"Beneficiary Id {beneficiary_id} for {beneficiary.name}, receiving {beneficiary.currency} in {beneficiary.bank_country} created successfully"
         )
     except ApiError as e:
-        print(
-            "Beneficiary encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Beneficiary encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     If the beneficiary is successfully created, the response message will contain full details about the beneficiary as
@@ -155,17 +134,9 @@ async def example() -> None:
             reference="2018-014",
             unique_request_id=uuid.uuid4(),
         )
-        print(
-            "Payment Id {0} for {1} {2} created succesfully".format(
-                payment.id, payment.amount, payment.currency
-            )
-        )
+        print(f"Payment Id {payment.id} for {payment.amount} {payment.currency} created succesfully")
     except ApiError as e:
-        print(
-            "Payment encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Payment encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     If the payment is successfully queued, the response payload will contain all the information about the payment as
@@ -187,8 +158,4 @@ async def example() -> None:
         await client.auth.close_session()
         print("Session closed")
     except ApiError as e:
-        print(
-            "Logoff encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Logoff encountered an error: {e.code} (HTTP code {e.status_code})")

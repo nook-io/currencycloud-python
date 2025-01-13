@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import Iban
-
 from tests.integration.conftest import my_vcr
 
 
@@ -31,10 +30,7 @@ class TestIbans:
             assert iban.currency == "EUR"
             assert iban.account_holder_name == "Development CM"
             assert iban.bank_institution_name == "The Currency Cloud"
-            assert (
-                iban.bank_institution_address
-                == "12 Steward Street, The Steward Building, London, E1 6FQ, GB"
-            )
+            assert iban.bank_institution_address == "12 Steward Street, The Steward Building, London, E1 6FQ, GB"
             assert iban.bank_institution_country == "United Kingdom"
             assert iban.bic_swift == "TCCLGB31"
 

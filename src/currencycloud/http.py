@@ -1,6 +1,7 @@
 """This module provides a Mixin to generate http requests to the CC API endpoints"""
 
-from typing import TYPE_CHECKING, Any, Awaitable, Callable
+from collections.abc import Awaitable, Callable
+from typing import TYPE_CHECKING, Any
 
 from httpx import Response
 from httpx._types import HeaderTypes, QueryParamTypes, RequestData
@@ -15,7 +16,6 @@ from currencycloud.errors import (
     NotFoundError,
     TooManyRequestsError,
 )
-from currencycloud.version import VERSION
 
 if TYPE_CHECKING:
     from currencycloud.config import Config
@@ -32,11 +32,7 @@ class Http:
         self.session = self.config.session
 
     async def get(
-        self,
-        endpoint: str,
-        query: dict[str, Any] | None = None,
-        authenticated: bool = True,
-        retry: bool = True,
+        self, endpoint: str, query: dict[str, Any] | None = None, authenticated: bool = True, retry: bool = True
     ) -> dict[str, Any]:
         """Executes a GET request."""
 
@@ -44,14 +40,10 @@ class Http:
         query = self.__encode_arrays(self.__handle_on_behalf_of(query))
         headers = await self.__build_headers(authenticated)
 
-        async def execute_request(
-            url: URL | str, headers: HeaderTypes, data: QueryParamTypes
-        ):
+        async def execute_request(url: URL | str, headers: HeaderTypes, data: QueryParamTypes):
             return await self.session.get(url, headers=headers, params=data)
 
-        response = await self.__handle_authentication_errors(
-            execute_request, retry, url, headers, query, authenticated
-        )
+        response = await self.__handle_authentication_errors(execute_request, retry, url, headers, query, authenticated)
 
         return self.__handle_errors("get", url, query, response)
 
@@ -61,7 +53,7 @@ class Http:
         data: dict[str, Any] | None,
         authenticated: bool = True,
         retry: bool = True,
-        disable_on_behalf_of: bool=False
+        disable_on_behalf_of: bool = False,
     ) -> dict[str, Any]:
         """Executes a POST request."""
 
@@ -71,14 +63,10 @@ class Http:
         data = self.__encode_arrays(data)
         headers = await self.__build_headers(authenticated)
 
-        async def execute_request(
-            url: URL | str, headers: HeaderTypes, data: RequestData
-        ) -> Response:
+        async def execute_request(url: URL | str, headers: HeaderTypes, data: RequestData) -> Response:
             return await self.session.post(url, headers=headers, data=data)
 
-        response = await self.__handle_authentication_errors(
-            execute_request, retry, url, headers, data, authenticated
-        )
+        response = await self.__handle_authentication_errors(execute_request, retry, url, headers, data, authenticated)
 
         return self.__handle_errors("post", url, data, response)
 
@@ -126,9 +114,7 @@ class Http:
         500: InternalApplicationError,
     }
 
-    def __handle_errors(
-        self, verb: str, url: str, params, response: Response
-    ) -> dict[str, Any]:
+    def __handle_errors(self, verb: str, url: str, params, response: Response) -> dict[str, Any]:
         if int(response.status_code / 100) == 2:
             return response.json()
         klass = Http.HTTP_CODE_TO_ERROR.get(response.status_code, ApiError)
@@ -136,9 +122,7 @@ class Http:
 
     async def __handle_authentication_errors(
         self,
-        execute_request: Callable[
-            [URL | str, HeaderTypes, QueryParamTypes], Awaitable[Response]
-        ]
+        execute_request: Callable[[URL | str, HeaderTypes, QueryParamTypes], Awaitable[Response]]
         | Callable[[URL | str, HeaderTypes, RequestData], Awaitable[Response]],
         retry: bool,
         url: str,

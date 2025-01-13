@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import FundingAccount
-
 from tests.integration.conftest import my_vcr
 
 
@@ -16,9 +15,7 @@ class TestFunding:
 
     async def test_funding_accounts_can_find(self) -> None:
         with my_vcr.use_cassette("funding/accounts_find.json"):
-            accounts = await self.client.funding.find_funding_accounts(
-                currency="GBP", per_page=5
-            )
+            accounts = await self.client.funding.find_funding_accounts(currency="GBP", per_page=5)
 
             assert accounts
             assert len(accounts) == 1
@@ -34,10 +31,7 @@ class TestFunding:
             assert account.account_number_type == "account_number"
             assert account.account_holder_name == "Jon Doe"
             assert account.bank_name == "Starling"
-            assert (
-                account.bank_address
-                == "3rd floor, 2 Finsbury Avenue, London, EC2M 2PP, GB"
-            )
+            assert account.bank_address == "3rd floor, 2 Finsbury Avenue, London, EC2M 2PP, GB"
             assert account.bank_country == "UK"
             assert account.currency == "GBP"
             assert account.payment_type == "regular"

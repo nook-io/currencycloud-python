@@ -1,5 +1,4 @@
 from currencycloud import Client, Config
-
 from tests.integration.conftest import my_vcr
 
 
@@ -15,9 +14,7 @@ class TestSenders:
 
     async def test_transaction_can_get_sender(self) -> None:
         with my_vcr.use_cassette("transactions/can_get_sender.json"):
-            sender = await self.client.senders.get_sender(
-                "e68301d3-5b04-4c1d-8f8b-13a9b8437040"
-            )
+            sender = await self.client.senders.get_sender("e68301d3-5b04-4c1d-8f8b-13a9b8437040")
 
             assert sender.id is not None
             assert sender.amount is not None

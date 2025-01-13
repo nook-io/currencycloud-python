@@ -9,6 +9,4 @@ class Senders(Http):
 
     async def get_sender(self, resource_id: str, **kwargs: Any) -> Sender:
         """Get the details of a specific sender."""
-        return Sender(
-            **await self.get("/v2/transactions/sender/" + resource_id, kwargs)
-        )
+        return Sender(**await self.get("/v2/transactions/sender/" + resource_id, kwargs))

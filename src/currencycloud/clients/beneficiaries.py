@@ -3,11 +3,7 @@
 from typing import Any
 
 from currencycloud.http import Http
-from currencycloud.resources import (
-    AccountVerification,
-    Beneficiary,
-    PaginatedCollection,
-)
+from currencycloud.resources import AccountVerification, Beneficiary, PaginatedCollection
 
 
 class Beneficiaries(Http):
@@ -36,9 +32,7 @@ class Beneficiaries(Http):
         Delete a previously created beneficiary and returns a hash containing the details of the
         deleted beneficiary.
         """
-        return Beneficiary(
-            **await self.post("/v2/beneficiaries/" + resource_id + "/delete", kwargs),
-        )
+        return Beneficiary(**await self.post("/v2/beneficiaries/" + resource_id + "/delete", kwargs))
 
     async def find(self, **kwargs: Any) -> PaginatedCollection[Beneficiary]:
         """
@@ -55,9 +49,7 @@ class Beneficiaries(Http):
 
     async def retrieve(self, resource_id: str, **kwargs: Any) -> Beneficiary:
         """Returns a json structure containing the details of the requested beneficiary."""
-        return Beneficiary(
-            **await self.get("/v2/beneficiaries/" + resource_id, query=kwargs)
-        )
+        return Beneficiary(**await self.get("/v2/beneficiaries/" + resource_id, query=kwargs))
 
     async def update(self, resource_id: str, **kwargs: Any) -> Beneficiary:
         """
@@ -69,9 +61,7 @@ class Beneficiaries(Http):
         For more detailed information please see our payment guide:
             http://help.currencycloud.com/world/faq/#mandatory-payment-information
         """
-        return Beneficiary(
-            **await self.post("/v2/beneficiaries/" + resource_id, kwargs)
-        )
+        return Beneficiary(**await self.post("/v2/beneficiaries/" + resource_id, kwargs))
 
     async def validate(self, **kwargs: Any) -> Beneficiary:
         """
@@ -87,6 +77,4 @@ class Beneficiaries(Http):
         """
         Validates Bank account details.
         """
-        return AccountVerification(
-            **await self.post("/v2/beneficiaries/account_verification", kwargs)
-        )
+        return AccountVerification(**await self.post("/v2/beneficiaries/account_verification", kwargs))

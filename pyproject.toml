@@ -17,8 +17,31 @@ dev-dependencies = [
     "mock==3.0.5",
     "pytest-asyncio>=0.25.2",
     "pytest>=6.0.0",
+    "ruff==0.9.1",
     "vcrpy==6.0.2",
 ]
+
+[tool.ruff.format]
+quote-style = "double"
+skip-magic-trailing-comma = true
+
+[tool.ruff]
+line-length = 120
+exclude = ["app/schema/xero/"]
+
+[tool.ruff.lint]
+ignore = [
+    # E501 and W191 can conflict with black formatting.
+    "E501",
+    "W191",
+]
+select = ["E", "F", "W", "I001", "DTZ", "UP", "INP"]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"src/example/*.py" = ["INP001"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/currencycloud"]

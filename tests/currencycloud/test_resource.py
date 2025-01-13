@@ -1,7 +1,8 @@
+from unittest.mock import patch
+
 from currencycloud import Config
 from currencycloud.http import Http
 from currencycloud.resources.resource import Resource
-from mock import patch
 
 
 class TestResource:

@@ -32,6 +32,4 @@ class Reports(Http):
         """
         Returns a json structure containing the details of the requested report.
         """
-        return Report(
-            **await self.get("/v2/reports/report_requests/" + resource_id, query=kwargs)
-        )
+        return Report(**await self.get("/v2/reports/report_requests/" + resource_id, query=kwargs))

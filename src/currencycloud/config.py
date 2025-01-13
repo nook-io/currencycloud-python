@@ -1,6 +1,7 @@
 """This module provides a Client class for authentication related calls to the CC API"""
 
-from typing import Awaitable, Callable, Literal
+from collections.abc import Awaitable, Callable
+from typing import Literal
 
 import httpx
 
@@ -15,10 +16,7 @@ class Config:
     ENV_PROD = "prod"
     ENV_DEMO = "demo"
 
-    ENVIRONMENT_URLS = {
-        ENV_PROD: "https://api.currencycloud.com",
-        ENV_DEMO: "https://devapi.currencycloud.com",
-    }
+    ENVIRONMENT_URLS = {ENV_PROD: "https://api.currencycloud.com", ENV_DEMO: "https://devapi.currencycloud.com"}
     _session: httpx.AsyncClient | None = None
 
     def __init__(
@@ -38,15 +36,14 @@ class Config:
         if client is not None:
             self._session = client
 
-        super(Config, self).__init__()
-    
+        super().__init__()
+
     @property
     def session(self) -> httpx.AsyncClient:
         if self._session is None:
             Config._session = httpx.AsyncClient()
         assert self._session is not None
         return self._session
-        
 
     async def get_auth_token(self) -> str:
         """Getter for the Auth Token. Generates one if there is None."""
@@ -76,6 +73,6 @@ class Config:
 
     def environment_url(self) -> str:
         if self.environment not in self.ENVIRONMENT_URLS:
-            raise RuntimeError("%s is not a valid environment name" % self.environment)
+            raise RuntimeError(f"{self.environment} is not a valid environment name")
 
         return self.ENVIRONMENT_URLS[self.environment]

@@ -1,13 +1,8 @@
 import pytest
+
 from currencycloud import Client, Config
 from currencycloud.errors import BadRequestError
-from currencycloud.resources import (
-    Payment,
-    PaymentTrackingInfo,
-    PaymentValidation,
-    QuotePaymentFee,
-)
-
+from currencycloud.resources import Payment, PaymentTrackingInfo, PaymentValidation, QuotePaymentFee
 from tests.integration.conftest import my_vcr
 
 
@@ -109,9 +104,7 @@ class TestPayments:
 
     async def test_payments_can_confirm(self) -> None:
         with my_vcr.use_cassette("payments/payments_confirmation.json"):
-            payment = await self.client.payments.payment_confirmation(
-                "a739b199-8260-4ffa-a404-b4b58345332e"
-            )
+            payment = await self.client.payments.payment_confirmation("a739b199-8260-4ffa-a404-b4b58345332e")
 
             assert payment is not None
             assert payment.id is not None
@@ -138,27 +131,18 @@ class TestPayments:
                 payment_type="regular",
             )
             self.client.config.login_id = "development2@currencycloud.demo"
-            self.client.config.api_key = (
-                "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-            )
+            self.client.config.api_key = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
             await self.client.config.reauthenticate()
-            payment = await self.client.payments.authorise(
-                payment_ids=[TestPayments.paymentId]
-            )
+            payment = await self.client.payments.authorise(payment_ids=[TestPayments.paymentId])
             assert payment is not None
             self.client.config.login_id = "development@currencycloud.demo"
-            self.client.config.api_key = (
-                "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-            )
+            self.client.config.api_key = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
             await self.client.config.reauthenticate()
 
     async def test_payments_delivery_date(self) -> None:
         with my_vcr.use_cassette("payments/delivery_date.json"):
             payment = await self.client.payments.payment_delivery_date(
-                payment_date="2018-01-01",
-                payment_type="regular",
-                currency="EUR",
-                bank_country="IT",
+                payment_date="2018-01-01", payment_type="regular", currency="EUR", bank_country="IT"
             )
 
             assert payment is not None
@@ -167,16 +151,12 @@ class TestPayments:
     async def test_quote_payment_fee(self) -> None:
         with my_vcr.use_cassette("payments/quote_payment_fee.json"):
             quote_payment_fee = await self.client.payments.quote_payment_fee(
-                payment_currency="USD",
-                payment_destination_country="US",
-                payment_type="regular",
+                payment_currency="USD", payment_destination_country="US", payment_type="regular"
             )
 
             assert quote_payment_fee is not None
             assert isinstance(quote_payment_fee, QuotePaymentFee)
-            assert (
-                quote_payment_fee.account_id == "0534aaf2-2egg-0134-2f36-10b11cd33cfb"
-            )
+            assert quote_payment_fee.account_id == "0534aaf2-2egg-0134-2f36-10b11cd33cfb"
             assert quote_payment_fee.fee_amount == "10.00"
             assert quote_payment_fee.fee_currency == "EUR"
             assert quote_payment_fee.payment_currency == "USD"
@@ -188,27 +168,19 @@ class TestPayments:
         with my_vcr.use_cassette("payments/delivery_date_error.json"):
             with pytest.raises(BadRequestError):
                 await self.client.payments.payment_delivery_date(
-                    payment_date="2020-08-02",
-                    payment_type="priority",
-                    currency="USD",
-                    bank_country="CA",
+                    payment_date="2020-08-02", payment_type="priority", currency="USD", bank_country="CA"
                 )
 
     async def test_payments_delivery_date_error_response2(self) -> None:
         with my_vcr.use_cassette("payments/delivery_date_error2.json"):
             with pytest.raises(BadRequestError):
                 await self.client.payments.payment_delivery_date(
-                    payment_date="2020-08-02",
-                    payment_type="priority",
-                    currency="USD",
-                    bank_country="abc",
+                    payment_date="2020-08-02", payment_type="priority", currency="USD", bank_country="abc"
                 )
 
     async def test_tracking_info(self) -> None:
         with my_vcr.use_cassette("payments/tracking_info.json"):
-            tracking_info = await self.client.payments.tracking_info(
-                "46ed4827-7b6f-4491-a06f-b548d5a7512d"
-            )
+            tracking_info = await self.client.payments.tracking_info("46ed4827-7b6f-4491-a06f-b548d5a7512d")
 
             assert tracking_info is not None
             assert isinstance(tracking_info, PaymentTrackingInfo)

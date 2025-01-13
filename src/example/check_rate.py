@@ -46,18 +46,10 @@ async def example() -> None:
     try:
         rates = await client.rates.find(currency_pair="EURGBP")
         print(
-            "The {0} conversion is {1} to bid and {2} to offer".format(
-                rates.currencies[0].currency_pair,
-                rates.currencies[0].bid,
-                rates.currencies[0].offer,
-            )
+            f"The {rates.currencies[0].currency_pair} conversion is {rates.currencies[0].bid} to bid and {rates.currencies[0].offer} to offer"
         )
     except ApiError as e:
-        print(
-            "Basic Exchange encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Basic Exchange encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     The two rates in the response are the “bid” and “offer” prices. The bid price is applicable if you are selling the base
@@ -71,24 +63,12 @@ async def example() -> None:
     balance, make the following call:
     """
     try:
-        rate = await client.rates.detailed(
-            buy_currency="EUR", sell_currency="GBP", fixed_side="buy", amount=10000
-        )
+        rate = await client.rates.detailed(buy_currency="EUR", sell_currency="GBP", fixed_side="buy", amount=10000)
         print(
-            "To buy {0} {1} you will need to sell {2} {3}. This quote will be valid until {4}".format(
-                rate.client_buy_amount,
-                rate.client_buy_currency,
-                rate.client_sell_amount,
-                rate.client_sell_currency,
-                rate.settlement_cut_off_time,
-            )
+            f"To buy {rate.client_buy_amount} {rate.client_buy_currency} you will need to sell {rate.client_sell_amount} {rate.client_sell_currency}. This quote will be valid until {rate.settlement_cut_off_time}"
         )
     except ApiError as e:
-        print(
-            "Detail Quote encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Detail Quote encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     On success, the response payload will contain details of Currencycloud’s quotation to make the conversion.
@@ -119,8 +99,4 @@ async def example() -> None:
         await client.auth.close_session()
         print("Session closed")
     except ApiError as e:
-        print(
-            "Logout encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Logout encountered an error: {e.code} (HTTP code {e.status_code})")

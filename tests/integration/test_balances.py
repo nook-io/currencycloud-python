@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import Balance, MarginBalanceTopUp
-
 from tests.integration.conftest import my_vcr
 
 
@@ -35,9 +34,7 @@ class TestBalances:
 
     async def test_margin_balances_top_up(self) -> None:
         with my_vcr.use_cassette("balances/top_up_margin.json"):
-            top_up = await self.client.balances.top_up_margin(
-                currency="GBP", amount="450"
-            )
+            top_up = await self.client.balances.top_up_margin(currency="GBP", amount="450")
 
             assert top_up
             assert top_up["currency"] == "GBP"

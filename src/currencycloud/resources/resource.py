@@ -1,6 +1,7 @@
 """This module provides the abstract Resource class"""
 
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 
 class Resource:
@@ -39,7 +40,7 @@ class Resource:
 
     def __setattr__(self, name: str, value: Any) -> None:
         if name.startswith("_"):
-            super(Resource, self).__setattr__(name, value)
+            super().__setattr__(name, value)
         else:
             self.__setitem__(name, value)
 

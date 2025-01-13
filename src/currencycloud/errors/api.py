@@ -1,8 +1,9 @@
-from json import JSONDecodeError
 import platform
 import sys
-from httpx import Response
+from json import JSONDecodeError
+
 import yaml
+from httpx import Response
 
 
 def extract_error_code(errors):
@@ -37,10 +38,7 @@ VALUES_TO_REDACT = ["api_key"]
 
 
 def redact_values(params):
-    return {
-        i: REDACTED_STRING if i in VALUES_TO_REDACT else params[i]
-        for i in params.keys()
-    }
+    return {i: REDACTED_STRING if i in VALUES_TO_REDACT else params[i] for i in params.keys()}
 
 
 class ApiError(Exception):
@@ -52,15 +50,10 @@ class ApiError(Exception):
             self.params = error["params"] if "params" in error else {}
 
         def to_h(self):
-            return {
-                "field": self.field,
-                "code": self.code,
-                "message": self.message,
-                "params": self.params,
-            }
+            return {"field": self.field, "code": self.code, "message": self.message, "params": self.params}
 
     def __init__(self, verb: str, route: str, params, response: Response) -> None:
-        super(ApiError, self).__init__()
+        super().__init__()
 
         self.verb = verb
         self.route = route
@@ -84,8 +77,7 @@ class ApiError(Exception):
     @property
     def platform(self):
         return "python - {version} - {implementation}".format(
-            version=sys.version.split("\n")[0].strip(),
-            implementation=platform.python_implementation(),
+            version=sys.version.split("\n")[0].strip(), implementation=platform.python_implementation()
         )
 
     def __str__(self):
@@ -93,11 +85,7 @@ class ApiError(Exception):
 
         error_details = {
             "platform": self.platform,
-            "request": {
-                "parameters": redact_values(self.params),
-                "verb": str(self.verb),
-                "url": self.route,
-            },
+            "request": {"parameters": redact_values(self.params), "verb": str(self.verb), "url": self.route},
             "response": {
                 "status_code": self.status_code,
                 "date": self.raw_response.headers["Date"],
@@ -107,9 +95,7 @@ class ApiError(Exception):
         }
 
         return "{class_name}\n{separator}\n{dump}\n".format(
-            class_name=class_name,
-            separator="---",
-            dump=yaml.safe_dump(error_details, default_flow_style=False),
+            class_name=class_name, separator="---", dump=yaml.safe_dump(error_details, default_flow_style=False)
         )
 
 

@@ -35,9 +35,7 @@ class Payments(Http):
         Delete a previously created payment and returns a hash containing the details of the
         deleted payment.
         """
-        return Payment(
-            **await self.post("/v2/payments/" + resource_id + "/delete", kwargs)
-        )
+        return Payment(**await self.post("/v2/payments/" + resource_id + "/delete", kwargs))
 
     async def find(self, **kwargs: Any):
         """Returns an Array of Payment objects matching the search criteria."""
@@ -77,9 +75,7 @@ class Payments(Http):
         """
         Get confirmation for a payment.
         """
-        return Payment(
-            **await self.get("/v2/payments/" + resource_id + "/confirmation", kwargs),
-        )
+        return Payment(**await self.get("/v2/payments/" + resource_id + "/confirmation", kwargs))
 
     async def authorise(self, **kwargs: Any):
         """
@@ -91,29 +87,19 @@ class Payments(Http):
         """
         Retrieves Payment Delivery Date.
         """
-        return PaymentDeliveryDate(
-            **await self.get("/v2/payments/payment_delivery_date", query=kwargs)
-        )
+        return PaymentDeliveryDate(**await self.get("/v2/payments/payment_delivery_date", query=kwargs))
 
     async def quote_payment_fee(self, **kwargs: Any) -> QuotePaymentFee:
         """
         Retrieves Quote Payment Fee.
         """
-        return QuotePaymentFee(
-            **await self.get("/v2/payments/quote_payment_fee", query=kwargs)
-        )
+        return QuotePaymentFee(**await self.get("/v2/payments/quote_payment_fee", query=kwargs))
 
-    async def tracking_info(
-        self, resource_id: str, **kwargs: Any
-    ) -> PaymentTrackingInfo:
+    async def tracking_info(self, resource_id: str, **kwargs: Any) -> PaymentTrackingInfo:
         """
         Retrieves Payment Tracking Info.
         """
-        return PaymentTrackingInfo(
-            **await self.get(
-                "/v2/payments/" + resource_id + "/tracking_info", query=kwargs
-            ),
-        )
+        return PaymentTrackingInfo(**await self.get("/v2/payments/" + resource_id + "/tracking_info", query=kwargs))
 
     async def validate(self, **kwargs: Any) -> PaymentValidation:
         """Validate Payment"""

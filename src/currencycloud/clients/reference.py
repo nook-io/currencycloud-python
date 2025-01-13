@@ -18,20 +18,14 @@ from currencycloud.resources import (
 class Reference(Http):
     """This class provides an interface to the Reference endpoints of the CC API"""
 
-    async def beneficiary_required_details(
-        self, **kwargs: Any
-    ) -> list[BeneficiaryRequiredDetails]:
+    async def beneficiary_required_details(self, **kwargs: Any) -> list[BeneficiaryRequiredDetails]:
         """Returns required beneficiary details and their basic validation formats."""
-        response = (
-            await self.get("/v2/reference/beneficiary_required_details", query=kwargs)
-        )["details"]
+        response = (await self.get("/v2/reference/beneficiary_required_details", query=kwargs))["details"]
         return [BeneficiaryRequiredDetails(**c) for c in response]
 
     async def conversion_dates(self, **kwargs: Any) -> ConversionDates:
         """Returns dates for which dates this currency pair can not be traded."""
-        return ConversionDates(
-            **await self.get("/v2/reference/conversion_dates", query=kwargs)
-        )
+        return ConversionDates(**await self.get("/v2/reference/conversion_dates", query=kwargs))
 
     async def currencies(self) -> list[Currency]:
         """Returns a list of all the currencies that are tradeable."""
@@ -47,23 +41,17 @@ class Reference(Http):
 
     async def settlement_accounts(self, **kwargs: Any) -> list[SettlementAccount]:
         """Returns settlement account information, detailing where funds need to be sent to."""
-        response = (await self.get("/v2/reference/settlement_accounts", query=kwargs))[
-            "settlement_accounts"
-        ]
+        response = (await self.get("/v2/reference/settlement_accounts", query=kwargs))["settlement_accounts"]
         return [SettlementAccount(**c) for c in response]
 
     async def payer_required_details(self, **kwargs: Any) -> list[PayerRequiredDetails]:
         """Returns required payer details and their basic validation formats."""
-        response = (
-            await self.get("/v2/reference/payer_required_details", query=kwargs)
-        )["details"]
+        response = (await self.get("/v2/reference/payer_required_details", query=kwargs))["details"]
         return [PayerRequiredDetails(**c) for c in response]
 
     async def payment_purpose_codes(self, **kwargs: Any) -> list[PaymentPurposeCode]:
         """Returns a list of valid purpose codes for the specified currency."""
-        response = (
-            await self.get("/v2/reference/payment_purpose_codes", query=kwargs)
-        )["purpose_codes"]
+        response = (await self.get("/v2/reference/payment_purpose_codes", query=kwargs))["purpose_codes"]
         return [PaymentPurposeCode(**c) for c in response]
 
     async def bank_details(self, **kwargs: Any) -> BankDetails:
@@ -73,7 +61,5 @@ class Reference(Http):
 
     async def payment_fee_rules(self, **kwargs: Any) -> list[PaymentFeeRule]:
         """Returns a list of payment fee rules."""
-        response = (await self.get("/v2/reference/payment_fee_rules", query=kwargs))[
-            "payment_fee_rules"
-        ]
+        response = (await self.get("/v2/reference/payment_fee_rules", query=kwargs))["payment_fee_rules"]
         return [PaymentFeeRule(**c) for c in response]

@@ -11,7 +11,7 @@ class PaginatedCollection(Generic[T], list[T]):
     """Provides a wrapper around an array of Resources with additional pagination details"""
 
     def __init__(self, collection: list[T], pagination: dict[str, Any]):
-        super(PaginatedCollection, self).__init__(collection)
+        super().__init__(collection)
         self.__pagination = Pagination(**pagination)
 
     @property

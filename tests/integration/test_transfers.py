@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import Transfer
-
 from tests.integration.conftest import my_vcr
 
 
@@ -42,16 +41,12 @@ class TestTransfers:
 
     async def test_transfers_can_retrieve(self) -> None:
         with my_vcr.use_cassette("transfers/can_retrieve.json"):
-            transfer = await self.client.transfers.retrieve(
-                "f4bf00d7-1672-463d-96b0-9e9643793978"
-            )
+            transfer = await self.client.transfers.retrieve("f4bf00d7-1672-463d-96b0-9e9643793978")
             assert transfer is not None
             assert transfer.currency == "GBP"
 
     async def test_transfers_can_cancel(self) -> None:
         with my_vcr.use_cassette("transfers/can_cancel.json"):
-            transfer = await self.client.transfers.cancel(
-                "6c19f186-4c4d-4854-ad09-fdeee792ed25"
-            )
+            transfer = await self.client.transfers.cancel("6c19f186-4c4d-4854-ad09-fdeee792ed25")
             assert transfer is not None
             assert transfer.status == "pending"

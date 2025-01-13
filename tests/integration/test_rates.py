@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import Rate
-
 from tests.integration.conftest import my_vcr
 
 
@@ -49,12 +48,8 @@ class TestRates:
             assert isinstance(detailed_rate, Rate)
             assert isinstance(float(detailed_rate.client_sell_amount), float)
 
-    async def test_rates_can_provide_detailed_rate_with_conversion_date_preference(
-        self,
-    ) -> None:
-        with my_vcr.use_cassette(
-            "rates/can_provide_detailed_rate_with_conversion_date_preference"
-        ):
+    async def test_rates_can_provide_detailed_rate_with_conversion_date_preference(self) -> None:
+        with my_vcr.use_cassette("rates/can_provide_detailed_rate_with_conversion_date_preference"):
             detailed_rate = await self.client.rates.detailed(
                 buy_currency="GBP",
                 sell_currency="USD",

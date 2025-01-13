@@ -9,7 +9,6 @@ from currencycloud.resources import (
     PaymentPurposeCode,
     SettlementAccount,
 )
-
 from tests.integration.conftest import my_vcr
 
 
@@ -46,9 +45,7 @@ class TestReference:
 
     async def test_reference_can_retrieve_conversion_dates(self) -> None:
         with my_vcr.use_cassette("reference/can_retrieve_conversion_dates.json"):
-            dates = await self.client.reference.conversion_dates(
-                conversion_pair="GBPUSD"
-            )
+            dates = await self.client.reference.conversion_dates(conversion_pair="GBPUSD")
 
             assert isinstance(dates, ConversionDates)
             assert dates.first_conversion_date
@@ -72,9 +69,7 @@ class TestReference:
 
     async def test_reference_can_retrieve_settlement_accounts(self) -> None:
         with my_vcr.use_cassette("reference/can_retrieve_settlement_accounts.json"):
-            settlement_accounts = await self.client.reference.settlement_accounts(
-                currency="GBP"
-            )
+            settlement_accounts = await self.client.reference.settlement_accounts(currency="GBP")
 
             assert len(settlement_accounts) > 0
 
@@ -82,15 +77,11 @@ class TestReference:
 
             assert isinstance(settlement_account, SettlementAccount)
             assert settlement_account.bank_name
-            assert (
-                "The Currency Cloud GBP" in settlement_account.bank_account_holder_name
-            )
+            assert "The Currency Cloud GBP" in settlement_account.bank_account_holder_name
 
     async def test_reference_can_retrieve_payer_required_details(self) -> None:
         with my_vcr.use_cassette("reference/can_retrieve_payer_required_details.json"):
-            details = await self.client.reference.payer_required_details(
-                payer_country="GB"
-            )
+            details = await self.client.reference.payer_required_details(payer_country="GB")
 
             assert len(details) > 0
 
@@ -132,10 +123,7 @@ class TestReference:
             assert isinstance(details, BankDetails)
 
             assert details.account_number == "GB19TCCL00997901654515"
-            assert (
-                details.bank_address
-                == "12 STEWARD STREET  THE STEWARD BUILDING FLOOR 0"
-            )
+            assert details.bank_address == "12 STEWARD STREET  THE STEWARD BUILDING FLOOR 0"
             assert details.bank_branch == ""
             assert details.bank_city == "LONDON"
             assert details.bank_country == "UNITED KINGDOM"
@@ -174,9 +162,7 @@ class TestReference:
             assert fee_rule1_3.fee_currency == "GBP"
             assert fee_rule1_3.payment_type == "priority"
 
-            payment_fee_rules2 = await self.client.reference.payment_fee_rules(
-                payment_type="regular"
-            )
+            payment_fee_rules2 = await self.client.reference.payment_fee_rules(payment_type="regular")
             assert len(payment_fee_rules2) == 1
 
             fee_rule2_1 = payment_fee_rules2[0]
@@ -186,9 +172,7 @@ class TestReference:
             assert fee_rule2_1.fee_currency == "USD"
             assert fee_rule2_1.payment_type == "regular"
 
-            payment_fee_rules3 = await self.client.reference.payment_fee_rules(
-                charge_type="ours"
-            )
+            payment_fee_rules3 = await self.client.reference.payment_fee_rules(charge_type="ours")
             assert len(payment_fee_rules3) == 1
 
             fee_rule3_1 = payment_fee_rules3[0]

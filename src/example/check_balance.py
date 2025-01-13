@@ -30,13 +30,9 @@ async def example() -> None:
     """
     try:
         balance = await client.balances.for_currency("EUR")
-        print("Your Euro balance is: €{0}".format(balance.amount))
+        print(f"Your Euro balance is: €{balance.amount}")
     except ApiError as e:
-        print(
-            "Check Balance encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Check Balance encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     To get a balance for any of your client sub-accounts, simply provide the sub-account UUID via the on_behalf_of query
@@ -51,13 +47,9 @@ async def example() -> None:
     try:
         balances = await client.balances.find()
         for element in balances:
-            print("Your {0} balance is {1}".format(element.currency, element.amount))
+            print(f"Your {element.currency} balance is {element.amount}")
     except ApiError as e:
-        print(
-            "Detailed Balances encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Detailed Balances encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     To fetch balances for any of your client sub-accounts, simply provide the sub-account UUID via the on_behalf_of query
@@ -73,8 +65,4 @@ async def example() -> None:
         await client.auth.close_session()
         print("Session closed")
     except ApiError as e:
-        print(
-            "Logout encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Logout encountered an error: {e.code} (HTTP code {e.status_code})")

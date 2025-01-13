@@ -17,6 +17,4 @@ from currencycloud.clients.senders import Senders as Senders
 from currencycloud.clients.transactions import Transactions as Transactions
 from currencycloud.clients.transfers import Transfers as Transfers
 from currencycloud.clients.vans import Vans as Vans
-from currencycloud.clients.withdrawal_accounts import (
-    WithdrawalAccounts as WithdrawalAccounts,
-)
+from currencycloud.clients.withdrawal_accounts import WithdrawalAccounts as WithdrawalAccounts

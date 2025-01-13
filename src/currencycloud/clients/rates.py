@@ -27,11 +27,7 @@ class Rates(Http):
 
         rates = []
         for currency_pair, bid_offer in response["rates"].items():
-            rate = {
-                "currency_pair": currency_pair,
-                "bid": bid_offer[0],
-                "offer": bid_offer[1],
-            }
+            rate = {"currency_pair": currency_pair, "bid": bid_offer[0], "offer": bid_offer[1]}
             rates.append(Rate(**rate))
 
         return resources.Rates(currencies=rates, unavailable=response["unavailable"])

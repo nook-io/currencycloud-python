@@ -37,13 +37,9 @@ async def example() -> None:
     """
     try:
         balance = await client.balances.for_currency("EUR")
-        print("Your Euro balance is: €{0}".format(balance.amount))
+        print(f"Your Euro balance is: €{balance.amount}")
     except ApiError as e:
-        print(
-            "Check Balance encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Check Balance encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     You can also check the balances for all foreign currencies that you hold in your Currencycloud account by calling the
@@ -52,13 +48,9 @@ async def example() -> None:
     try:
         balances = await client.balances.find()
         for element in balances:
-            print("Your {0} balance is {1}".format(element.currency, element.amount))
+            print(f"Your {element.currency} balance is {element.amount}")
     except ApiError as e:
-        print(
-            "Check Balances encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Check Balances encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     3. Top up
@@ -66,47 +58,25 @@ async def example() -> None:
     Get Detailed Rates endpoint.
     """
     try:
-        rate = await client.rates.detailed(
-            buy_currency="EUR", sell_currency="GBP", fixed_side="buy", amount=10000
-        )
+        rate = await client.rates.detailed(buy_currency="EUR", sell_currency="GBP", fixed_side="buy", amount=10000)
         print(
-            "To buy {0} {1} you will need to sell {2} {3}. This quote will be valid until {4}".format(
-                rate.client_buy_amount,
-                rate.client_buy_currency,
-                rate.client_sell_amount,
-                rate.client_sell_currency,
-                rate.settlement_cut_off_time,
-            )
+            f"To buy {rate.client_buy_amount} {rate.client_buy_currency} you will need to sell {rate.client_sell_amount} {rate.client_sell_currency}. This quote will be valid until {rate.settlement_cut_off_time}"
         )
     except ApiError as e:
-        print(
-            "Detail Rate encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Detail Rate encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     If you’re happy with the quote, you may authorize the conversion by calling the Create Conversion endpoint.
     """
     try:
         conversion = await client.conversions.create(
-            buy_currency="EUR",
-            sell_currency="GBP",
-            fixed_side="buy",
-            amount="10000",
-            term_agreement="true",
+            buy_currency="EUR", sell_currency="GBP", fixed_side="buy", amount="10000", term_agreement="true"
         )
         print(
-            "Conversion Id {0} for {1} {2} created succesfully".format(
-                conversion.id, conversion.client_buy_amount, conversion.buy_currency
-            )
+            f"Conversion Id {conversion.id} for {conversion.client_buy_amount} {conversion.buy_currency} created succesfully"
         )
     except ApiError as e:
-        print(
-            "Conversion encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Conversion encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     On success, the payload of the response message will contain full details of the conversion as recorded against your
@@ -128,11 +98,7 @@ async def example() -> None:
             print(element + " ", end="")
         print()
     except ApiError as e:
-        print(
-            "Beneficiary Details encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Beneficiary Details encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     The response tells us that, to make a regular payment to a German bank account in Euros, we need two pieces of
@@ -158,19 +124,10 @@ async def example() -> None:
         )
         beneficiary_id = beneficiary.id
         print(
-            "Beneficiary Id {0} for {1}, receiving {2} in {3} created successfully".format(
-                beneficiary_id,
-                beneficiary.name,
-                beneficiary.currency,
-                beneficiary.bank_country,
-            )
+            f"Beneficiary Id {beneficiary_id} for {beneficiary.name}, receiving {beneficiary.currency} in {beneficiary.bank_country} created successfully"
         )
     except ApiError as e:
-        print(
-            "Beneficiary encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Beneficiary encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     If the beneficiary is successfully created, the response message will contain full details about the beneficiary as
@@ -193,31 +150,15 @@ async def example() -> None:
             reference="2018-014",
             unique_request_id=uuid.uuid4(),
         )
-        print(
-            "Payment Id {0} for {1} {2} created succesfully".format(
-                payment.id, payment.amount, payment.currency
-            )
-        )
+        print(f"Payment Id {payment.id} for {payment.amount} {payment.currency} created succesfully")
     except ApiError as e:
-        print(
-            "Payment encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Payment encountered an error: {e.code} (HTTP code {e.status_code})")
 
     try:
-        payment = await client.payments.payment_confirmation(
-            "a739b199-8260-4ffa-a404-b4b58345332e"
-        )
-        print(
-            f"Payment with ID: {payment.payment_id} confirmed. ID of Confirmation: {payment.id}"
-        )
+        payment = await client.payments.payment_confirmation("a739b199-8260-4ffa-a404-b4b58345332e")
+        print(f"Payment with ID: {payment.payment_id} confirmed. ID of Confirmation: {payment.id}")
     except ApiError as e:
-        print(
-            "Payment encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Payment encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     If the payment is successfully queued, the response payload will contain all the information about the payment as
@@ -239,8 +180,4 @@ async def example() -> None:
         await client.auth.close_session()
         print("Session closed")
     except ApiError as e:
-        print(
-            "Logout encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Logout encountered an error: {e.code} (HTTP code {e.status_code})")

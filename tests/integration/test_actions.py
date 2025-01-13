@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import Account, AccountVerification, Balance, Beneficiary
-
 from tests.integration.conftest import my_vcr
 
 
@@ -38,9 +37,7 @@ class TestActions:
 
     async def test_actions_can_create(self) -> None:
         with my_vcr.use_cassette("actions/can_create.json"):
-            beneficiary = await self.client.beneficiaries.create(
-                **TestActions.beneficiary_params
-            )
+            beneficiary = await self.client.beneficiaries.create(**TestActions.beneficiary_params)
 
             TestActions.beneficiary_id = beneficiary.id
 
@@ -63,9 +60,7 @@ class TestActions:
 
     async def test_actions_can_retrieve(self) -> None:
         with my_vcr.use_cassette("actions/can_retrieve.json"):
-            beneficiary = await self.client.beneficiaries.retrieve(
-                TestActions.beneficiary_id
-            )
+            beneficiary = await self.client.beneficiaries.retrieve(TestActions.beneficiary_id)
 
             assert isinstance(beneficiary, Beneficiary)
             assert beneficiary.id == TestActions.beneficiary_id
@@ -73,9 +68,7 @@ class TestActions:
     async def test_actions_can_find(self) -> None:
         with my_vcr.use_cassette("actions/can_find.json"):
             beneficiaries = await self.client.beneficiaries.find(
-                bank_account_holder_name=TestActions.beneficiary_params[
-                    "bank_account_holder_name"
-                ]
+                bank_account_holder_name=TestActions.beneficiary_params["bank_account_holder_name"]
             )
 
             assert beneficiaries
@@ -98,17 +91,12 @@ class TestActions:
     async def test_actions_can_first(self) -> None:
         with my_vcr.use_cassette("actions/can_first.json"):
             beneficiary = await self.client.beneficiaries.first(
-                bank_account_holder_name=TestActions.beneficiary_params[
-                    "bank_account_holder_name"
-                ]
+                bank_account_holder_name=TestActions.beneficiary_params["bank_account_holder_name"]
             )
 
             assert isinstance(beneficiary, Beneficiary)
             assert beneficiary.id == TestActions.beneficiary_first_id
-            assert (
-                beneficiary.bank_account_holder_name
-                == TestActions.beneficiary_params["bank_account_holder_name"]
-            )
+            assert beneficiary.bank_account_holder_name == TestActions.beneficiary_params["bank_account_holder_name"]
 
     async def test_actions_can_update(self) -> None:
         with my_vcr.use_cassette("actions/can_update.json"):
@@ -122,9 +110,7 @@ class TestActions:
 
     async def test_actions_can_delete(self) -> None:
         with my_vcr.use_cassette("actions/can_delete.json"):
-            beneficiary = await self.client.beneficiaries.delete(
-                TestActions.beneficiary_id
-            )
+            beneficiary = await self.client.beneficiaries.delete(TestActions.beneficiary_id)
 
             assert isinstance(beneficiary, Beneficiary)
             assert beneficiary.id == TestActions.beneficiary_id
@@ -144,22 +130,15 @@ class TestActions:
                 "bank_country": "GB",
                 "currency": "GBP",
                 "account_number": TestActions.beneficiary_params["account_number"],
-                "routing_code_type_1": TestActions.beneficiary_params[
-                    "routing_code_type_2"
-                ],
-                "routing_code_value_1": TestActions.beneficiary_params[
-                    "routing_code_value_2"
-                ],
+                "routing_code_type_1": TestActions.beneficiary_params["routing_code_type_2"],
+                "routing_code_value_1": TestActions.beneficiary_params["routing_code_value_2"],
                 "payment_types": ["regular"],
             }
 
             beneficiary = await self.client.beneficiaries.validate(**params)
 
             assert isinstance(beneficiary, Beneficiary)
-            assert (
-                beneficiary.account_number
-                == TestActions.beneficiary_params["account_number"]
-            )
+            assert beneficiary.account_number == TestActions.beneficiary_params["account_number"]
             assert "regular" in beneficiary.payment_types
 
     async def test_actions_can_verify_beneficiaries(self) -> None:
@@ -175,9 +154,7 @@ class TestActions:
                 "beneficiary_last_name": "last",
             }
 
-            account_verification = await self.client.beneficiaries.account_verification(
-                **params
-            )
+            account_verification = await self.client.beneficiaries.account_verification(**params)
 
             assert isinstance(account_verification, AccountVerification)
             assert account_verification.actual_name == "test last"

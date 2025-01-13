@@ -28,9 +28,7 @@ class Balances(Http):
         """
         Provides the balance for a currency and shows the date that the balance was last updated.
         """
-        return MarginBalanceTopUp(
-            **await self.post("/v2/balances/top_up_margin", kwargs)
-        )
+        return MarginBalanceTopUp(**await self.post("/v2/balances/top_up_margin", kwargs))
 
     async def first(self, **params: Any) -> Balance:
         params["per_page"] = 1

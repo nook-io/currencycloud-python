@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import Contact
-
 from tests.integration.conftest import my_vcr
 
 
@@ -23,9 +22,7 @@ class TestContacts:
 
     async def test_actions_can_find(self) -> None:
         with my_vcr.use_cassette("contacts/find.json"):
-            contacts = await self.client.contacts.find(
-                email_address="api.test.user2@currencycloud.com", per_page=1
-            )
+            contacts = await self.client.contacts.find(email_address="api.test.user2@currencycloud.com", per_page=1)
 
             assert contacts
             assert len(contacts) == 1
@@ -39,9 +36,7 @@ class TestContacts:
 
     async def test_actions_can_retrieve(self) -> None:
         with my_vcr.use_cassette("contacts/retrieve.json"):
-            contact = await self.client.contacts.retrieve(
-                "16565245-1b65-464e-affa-58313192b54f"
-            )
+            contact = await self.client.contacts.retrieve("16565245-1b65-464e-affa-58313192b54f")
 
             assert contact is not None
             assert isinstance(contact, Contact)
@@ -66,9 +61,7 @@ class TestContacts:
 
     async def test_contacts_can_update(self) -> None:
         with my_vcr.use_cassette("contacts/update.json"):
-            contact = await self.client.contacts.retrieve(
-                "16565245-1b65-464e-affa-58313192b54f"
-            )
+            contact = await self.client.contacts.retrieve("16565245-1b65-464e-affa-58313192b54f")
             assert contact is not None
 
             contact.login_id = "api.test.user1@currencycloud.com"

@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import Van
-
 from tests.integration.conftest import my_vcr
 
 
@@ -30,9 +29,7 @@ class TestVans:
             assert van.virtual_account_number == "8303723297"
             assert van.account_holder_name == "Account-ZXOANNAMKPRQ"
             assert van.bank_institution_name == "Community Federal Savings Bank"
-            assert (
-                van.bank_institution_address == "Seventh Avenue, New York, NY 10019, US"
-            )
+            assert van.bank_institution_address == "Seventh Avenue, New York, NY 10019, US"
             assert van.bank_institution_country == "United States"
             assert van.routing_code == "026073150"
 

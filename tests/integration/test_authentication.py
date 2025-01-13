@@ -1,5 +1,4 @@
 from currencycloud import Client, Config
-
 from tests.integration.conftest import my_vcr
 
 
@@ -36,10 +35,7 @@ class TestAuthentication:
         # Set the token to an invalid one
         self.client.config.auth_token = "deadbeefdeadbeefdeadbeefdeadbeef"
 
-        with my_vcr.use_cassette(
-            "authentication/handles_session_timeout",
-            match_requests_on=["uri", "method"],
-        ):
+        with my_vcr.use_cassette("authentication/handles_session_timeout", match_requests_on=["uri", "method"]):
             response = await self.client.beneficiaries.find()
 
             assert response is not None

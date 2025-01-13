@@ -21,6 +21,4 @@ class Transactions(Http):
 
     async def retrieve(self, resource_id: str, **kwargs: Any) -> Transaction:
         """Find the details of a specific transaction."""
-        return Transaction(
-            **await self.get("/v2/transactions/" + resource_id, query=kwargs)
-        )
+        return Transaction(**await self.get("/v2/transactions/" + resource_id, query=kwargs))

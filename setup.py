@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
 
 from glob import glob
 from os.path import basename, splitext

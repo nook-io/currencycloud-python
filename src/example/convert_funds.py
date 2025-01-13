@@ -36,24 +36,12 @@ async def example() -> None:
     Get Detailed Rates endpoint
     """
     try:
-        rate = await client.rates.detailed(
-            buy_currency="EUR", sell_currency="GBP", fixed_side="buy", amount=10000
-        )
+        rate = await client.rates.detailed(buy_currency="EUR", sell_currency="GBP", fixed_side="buy", amount=10000)
         print(
-            "To buy {0} {1} you will need to sell {2} {3}. This quote will be valid until {4}".format(
-                rate.client_buy_amount,
-                rate.client_buy_currency,
-                rate.client_sell_amount,
-                rate.client_sell_currency,
-                rate.settlement_cut_off_time,
-            )
+            f"To buy {rate.client_buy_amount} {rate.client_buy_currency} you will need to sell {rate.client_sell_amount} {rate.client_sell_currency}. This quote will be valid until {rate.settlement_cut_off_time}"
         )
     except ApiError as e:
-        print(
-            "Detail Quote encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Detail Quote encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     On success, the response payload will contain details of Currencycloud’s quotation to make the conversion.
@@ -72,16 +60,10 @@ async def example() -> None:
             term_agreement="true",
         )
         print(
-            "Conversion Id {0} for {1} {2} created successfully".format(
-                conversion.id, conversion.client_buy_amount, conversion.buy_currency
-            )
+            f"Conversion Id {conversion.id} for {conversion.client_buy_amount} {conversion.buy_currency} created successfully"
         )
     except ApiError as e:
-        print(
-            "Conversion encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Conversion encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     On success, the payload of the response message will contain full details of the conversion as recorded against your
@@ -92,9 +74,7 @@ async def example() -> None:
     """
 
     try:
-        conversions = await client.conversions.split_preview(
-            "c805aa35-9bd3-4afe-ade2-d341e551aa16", amount="100"
-        )
+        conversions = await client.conversions.split_preview("c805aa35-9bd3-4afe-ade2-d341e551aa16", amount="100")
         print("Your conversion after successful split preview: ")
         print("Parent conversion ID: " + conversions["parent_conversion"].get("id"))
         print(
@@ -122,16 +102,10 @@ async def example() -> None:
             + conversions["child_conversion"].get("buy_amount")
         )
     except ApiError as e:
-        print(
-            "Conversion encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Conversion encountered an error: {e.code} (HTTP code {e.status_code})")
 
     try:
-        conversions = await client.conversions.split_history(
-            "c805aa35-9bd3-4afe-ade2-d341e551aa16"
-        )
+        conversions = await client.conversions.split_history("c805aa35-9bd3-4afe-ade2-d341e551aa16")
         print("Your conversion after successful split history: ")
         for element in conversions["child_conversions"]:
             print("Child conversion ID: " + element.get("id"))
@@ -149,43 +123,26 @@ async def example() -> None:
             )
 
     except ApiError as e:
-        print(
-            "Conversion encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Conversion encountered an error: {e.code} (HTTP code {e.status_code})")
 
     try:
         change_date_quote = await client.conversions.date_change_quote(
-            "2b436517-619b-4abe-a591-821dd31b264f",
-            new_settlement_date="2018-10-29T16:30:00+00:00",
+            "2b436517-619b-4abe-a591-821dd31b264f", new_settlement_date="2018-10-29T16:30:00+00:00"
         )
-        print(
-            f"Data change quote for conversion with id: + {change_date_quote.conversion_id} was successful."
-        )
+        print(f"Data change quote for conversion with id: + {change_date_quote.conversion_id} was successful.")
         print(f"Old settlement date: {change_date_quote.old_settlement_date}")
         print(f"New settlement data: {change_date_quote.new_settlement_date}")
 
     except ApiError as e:
-        print(
-            "Conversion encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Conversion encountered an error: {e.code} (HTTP code {e.status_code})")
 
     try:
-        cancellation_quote = await client.conversions.cancellation_quote(
-            "63298593-bd8d-455d-8ee8-2f85dd390f2f"
-        )
+        cancellation_quote = await client.conversions.cancellation_quote("63298593-bd8d-455d-8ee8-2f85dd390f2f")
         print(
             f"Successful Cancellation Quote,\nAmount: {cancellation_quote.amount},\nCurrency: {cancellation_quote.currency}"
         )
     except ApiError as e:
-        print(
-            "Conversion encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Conversion encountered an error: {e.code} (HTTP code {e.status_code})")
 
     try:
         profit_and_loss = await client.conversions.profit_and_loss()
@@ -202,11 +159,7 @@ async def example() -> None:
                     f"{element.amount} {element.currency}"
                 )
     except ApiError as e:
-        print(
-            "Conversion encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Conversion encountered an error: {e.code} (HTTP code {e.status_code})")
 
     """
     3. Logout
@@ -217,8 +170,4 @@ async def example() -> None:
         await client.auth.close_session()
         print("Session closed")
     except ApiError as e:
-        print(
-            "Logout encountered an error: {0} (HTTP code {1})".format(
-                e.code, e.status_code
-            )
-        )
+        print(f"Logout encountered an error: {e.code} (HTTP code {e.status_code})")

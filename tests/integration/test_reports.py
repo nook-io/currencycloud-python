@@ -1,6 +1,5 @@
 from currencycloud import Client, Config
 from currencycloud.resources import PaginatedCollection, Report
-
 from tests.integration.conftest import my_vcr
 
 
@@ -32,10 +31,7 @@ class TestReports:
     async def test_report_payments_can_create(self) -> None:
         with my_vcr.use_cassette("reports/can_create_payment_report.json"):
             report = await self.client.report.create_report_for_payments(
-                description="Currency Cloud Testing Environment",
-                currency="GBP",
-                amount_from="1000",
-                amount_to="10000",
+                description="Currency Cloud Testing Environment", currency="GBP", amount_from="1000", amount_to="10000"
             )
             assert report is not None
             assert isinstance(report, Report)
@@ -65,9 +61,7 @@ class TestReports:
 
     async def test_reports_can_find_via_id(self) -> None:
         with my_vcr.use_cassette("reports/can_find_reports_via_id.json"):
-            report = await self.client.report.find_via_id(
-                "c3ae0475-ef72-46ef-8a90-c2d3c2912911"
-            )
+            report = await self.client.report.find_via_id("c3ae0475-ef72-46ef-8a90-c2d3c2912911")
 
             assert report is not None
             assert isinstance(report, Report)
