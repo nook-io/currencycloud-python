@@ -33,7 +33,6 @@ exclude = ["app/schema/xero/"]
 ignore = [
     # E501 and W191 can conflict with black formatting.
     "E501",
-    "W191",
 ]
 select = ["E", "F", "W", "I001", "DTZ", "UP", "INP"]
 
