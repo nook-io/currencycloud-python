@@ -26,6 +26,7 @@ from currencycloud.clients import (
     Vans,
     WithdrawalAccounts,
 )
+from currencycloud.clients.demo import Demo
 from currencycloud.config import Config
 from currencycloud.http import Http
 
@@ -39,6 +40,7 @@ class Client(Http):
     _beneficiaries_client = None
     _contacts_client = None
     _conversions_client = None
+    _demo_client = None
     _funding_client = None
     _ibans_client = None
     _payers_client = None
@@ -142,6 +144,13 @@ class Client(Http):
         if self._conversions_client is None:
             self._conversions_client = Conversions(self.config)
         return self._conversions_client
+
+    @property
+    def demo(self) -> Demo:
+        """Get the Senders client."""
+        if self._demo_client is None:
+            self._demo_client = Demo(self.config)
+        return self._demo_client
 
     @property
     def funding(self) -> Funding:
