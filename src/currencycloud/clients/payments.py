@@ -28,7 +28,7 @@ class Payments(Http):
         For more detailed information please see our payment guide:
             http://help.currencycloud.com/world/faq/#mandatory-payment-information
         """
-        return Payment(**await self.post("/v2/payments/create", kwargs))
+        return Payment(**await self.post("/v2/payments/create", kwargs, headers=kwargs.pop("headers", {})))
 
     async def delete(self, resource_id: str, **kwargs: Any) -> Payment:
         """
@@ -51,7 +51,6 @@ class Payments(Http):
         """Returns a hash containing the details of the requested payment."""
         return Payment(**await self.get("/v2/payments/" + resource_id, query=kwargs))
 
-    async def retrieve_submission(self, resource_id: str, **kwargs: Any) -> dict[str, Any]:
         """
         Returns a hash containing the details of MT103 information for a SWIFT submitted payment.
         """
@@ -103,7 +102,14 @@ class Payments(Http):
 
     async def validate(self, **kwargs: Any) -> PaymentValidation:
         """Validate Payment"""
-        return PaymentValidation(**await self.post("/v2/payments/validate", data=kwargs))
+        response, headers = await self.post(
+            "/v2/payments/validate", data=kwargs, headers=kwargs.pop("headers", {}), return_headers=True
+        )
+        sca_header_names = ("x-sca-id", "x-sca-type", "x-sca-required")
+        headers = {
+            header_name: header_value for header_name in sca_header_names if (header_value := headers.get(header_name))
+        }
+        return PaymentValidation(**response, headers=headers)
 
     async def payment_fees(self, **kwargs: Any) -> PaymentFee:
         return PaymentFee(**await self.get("/v2/payments/payment_fees", query=kwargs))
