@@ -3,7 +3,7 @@
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
-from httpx import Response
+from httpx import Headers, Response
 from httpx._types import HeaderTypes, QueryParamTypes, RequestData
 from httpx._urls import URL
 
@@ -32,13 +32,19 @@ class Http:
         self.session = self.config.session
 
     async def get(
-        self, endpoint: str, query: dict[str, Any] | None = None, authenticated: bool = True, retry: bool = True
+        self,
+        endpoint: str,
+        query: dict[str, Any] | None = None,
+        authenticated: bool = True,
+        retry: bool = True,
+        headers: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Executes a GET request."""
 
         url = self.__build_url(endpoint)
         query = self.__encode_arrays(self.__handle_on_behalf_of(query))
-        headers = await self.__build_headers(authenticated)
+        headers = headers or {}
+        headers.update(await self.__build_headers(authenticated))
 
         async def execute_request(url: URL | str, headers: HeaderTypes, data: QueryParamTypes):
             return await self.session.get(url, headers=headers, params=data)
@@ -54,21 +60,27 @@ class Http:
         authenticated: bool = True,
         retry: bool = True,
         disable_on_behalf_of: bool = False,
-    ) -> dict[str, Any]:
+        headers: dict[str, Any] | None = None,
+        return_headers: bool = False,
+    ) -> dict[str, Any] | tuple[dict[str, Any], Headers]:
         """Executes a POST request."""
 
         url = self.__build_url(endpoint)
         if not disable_on_behalf_of:
             data = self.__handle_on_behalf_of(data)
         data = self.__encode_arrays(data)
-        headers = await self.__build_headers(authenticated)
+        headers = headers or {}
+        headers.update(await self.__build_headers(authenticated))
 
         async def execute_request(url: URL | str, headers: HeaderTypes, data: RequestData) -> Response:
             return await self.session.post(url, headers=headers, data=data)
 
         response = await self.__handle_authentication_errors(execute_request, retry, url, headers, data, authenticated)
 
-        return self.__handle_errors("post", url, data, response)
+        ret = self.__handle_errors("post", url, data, response)
+        if return_headers:
+            return ret, response.headers
+        return ret
 
     def __build_url(self, endpoint: str) -> str:
         return self.__environment_url() + endpoint
