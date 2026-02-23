@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="currency_cloud",
-    version="5.7.0",
+    version="5.7.1",
     license="MIT",
     description="Async Python SDK for the Currencycloud API.",
     long_description="",

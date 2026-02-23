@@ -67,9 +67,15 @@ class Client(Http):
         super().__init__(config)
 
     @classmethod
-    def with_config(cls, config) -> "Client":
+    def with_config(cls, config: Config) -> "Client":
         """Instantiate a new Client using a config instance"""
-        return cls(config.login_id, config.api_key, config.environment)
+        return cls(
+            login_id=config.login_id,
+            api_key=config.api_key,
+            environment=config.environment,
+            token_getter=config.token_getter,
+            client=config._session,
+        )
 
     async def authenticate(self) -> None:
         """Generate an auth token and store it in the config."""
