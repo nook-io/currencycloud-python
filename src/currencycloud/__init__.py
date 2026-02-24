@@ -6,10 +6,9 @@ support, please contact our Support team at support@currencycloud.com.
 
 from currencycloud.client import Client as Client
 from currencycloud.config import Config as Config
-from currencycloud.version import VERSION
 
 __title__ = "currencycloud"
-__version__ = VERSION
+__version__ = "5.7.1"
 __license__ = "MIT"
 __copyright__ = "Copyright 2015-2019 Currencycloud"
 
