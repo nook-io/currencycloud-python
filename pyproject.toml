@@ -1,6 +1,6 @@
 [project]
 name = "currencycloud"
-version = "0.1.0"
+version = "5.7.1"
 description = "Async Python SDK for the Currencycloud API"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -9,8 +9,8 @@ license = "MIT"
 authors = [{ name = "Johnny Deuss", email = "johnny@nook.io" }]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.10.5,<0.11.0"]
+build-backend = "uv_build"
 
 [tool.uv]
 dev-dependencies = [
