@@ -8,7 +8,12 @@ class Currency(Resource):
 
 
 class ConversionDates(Resource):
-    pass
+    first_conversion_cutoff_datetime: str
+    first_conversion_date: str
+    next_day_conversion_date: str
+    default_conversion_date: str
+    optimize_liquidity_conversion_date: str
+    invalid_conversion_dates: dict[str, str]
 
 
 class SettlementAccount(Resource):
