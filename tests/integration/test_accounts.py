@@ -106,9 +106,22 @@ class TestAccounts:
 
             assert settings is not None
             assert isinstance(settings, ComplianceSettings)
+            assert settings.account_id == "8ec3a69b-02d1-4f09-9a6b-6bd54a61b3a8"
             assert settings.customer_risk == "LOW"
-            assert settings.expected_monthly_activity_value == 50000
+            assert settings.industry_type == "Telecom Services"
+            assert settings.country_of_incorporation == "US"
+            assert settings.date_of_incorporation == "2020-01-30"
+            assert settings.business_website_url == "https://currencycloud.com"
             assert settings.expected_transaction_countries == ["GB", "US", "FR"]
+            assert settings.expected_transaction_currencies == ["USD"]
+            assert settings.expected_monthly_activity_volume == 20
+            assert settings.expected_monthly_activity_value == 50000
+            assert settings.tax_identification == "some-tax-id"
+            assert settings.trading_address_street == "some-street"
+            assert settings.trading_address_city == "some-city"
+            assert settings.trading_address_state == "NY"
+            assert settings.trading_address_postalcode == "90210"
+            assert settings.trading_address_country == "US"
 
     async def test_accounts_can_update_compliance_settings(self) -> None:
         with my_vcr.use_cassette("accounts/can_update_compliance_settings.json"):
@@ -118,4 +131,5 @@ class TestAccounts:
 
             assert settings is not None
             assert isinstance(settings, ComplianceSettings)
+            assert settings.account_id == "8ec3a69b-02d1-4f09-9a6b-6bd54a61b3a8"
             assert settings.customer_risk == "MEDIUM"

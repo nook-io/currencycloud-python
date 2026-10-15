@@ -1,5 +1,7 @@
 """This module provides the object representation of a CurrencyCloud Account"""
 
+from typing import Literal
+
 from currencycloud.resources.resource import Resource
 
 
@@ -38,4 +40,21 @@ class PaymentChargesSettings(Resource):
 
 
 class ComplianceSettings(Resource):
-    pass
+    account_id: str
+    industry_type: str | None
+    country_of_incorporation: str | None
+    date_of_incorporation: str | None
+    business_website_url: str | None
+    expected_transaction_countries: list[str] | None
+    expected_transaction_currencies: list[str] | None
+    expected_monthly_activity_volume: int | None
+    expected_monthly_activity_value: float | None
+    tax_identification: str | None
+    national_identification: str | None
+    country_of_citizenship: str | None
+    trading_address_street: str | None
+    trading_address_city: str | None
+    trading_address_state: str | None
+    trading_address_postalcode: str | None
+    trading_address_country: str | None
+    customer_risk: Literal["LOW", "MEDIUM", "HIGH"] | None

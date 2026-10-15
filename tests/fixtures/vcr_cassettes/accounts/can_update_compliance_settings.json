@@ -66,7 +66,7 @@
       "response": {
         "body": {
           "encoding": "utf-8",
-          "string": "{ \"account_id\": \"8ec3a69b-02d1-4f09-9a6b-6bd54a61b3a8\", \"customer_risk\": \"MEDIUM\", \"expected_monthly_activity_value\": 50000, \"expected_monthly_activity_volume\": 20, \"expected_transaction_countries\": [\"GB\", \"US\", \"FR\"], \"expected_transaction_currencies\": \"USD\" }"
+          "string": "{ \"account_id\": \"8ec3a69b-02d1-4f09-9a6b-6bd54a61b3a8\", \"industry_type\": \"Telecom Services\", \"country_of_incorporation\": \"US\", \"date_of_incorporation\": \"2020-01-30\", \"business_website_url\": \"https://currencycloud.com\", \"expected_transaction_countries\": [\"GB\", \"US\", \"FR\"], \"expected_transaction_currencies\": [\"USD\"], \"expected_monthly_activity_volume\": 20, \"expected_monthly_activity_value\": 50000, \"tax_identification\": \"some-tax-id\", \"national_identification\": null, \"country_of_citizenship\": null, \"trading_address_street\": \"some-street\", \"trading_address_city\": \"some-city\", \"trading_address_state\": \"NY\", \"trading_address_postalcode\": \"90210\", \"trading_address_country\": \"US\", \"customer_risk\": \"MEDIUM\" }"
         },
         "headers": {
           "CF-RAY": "35f4cde068ac358a-LHR",
