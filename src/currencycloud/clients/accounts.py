@@ -3,7 +3,7 @@
 from typing import Any
 
 from currencycloud.http import Http
-from currencycloud.resources import Account, PaginatedCollection, PaymentChargesSettings
+from currencycloud.resources import Account, ComplianceSettings, PaginatedCollection, PaymentChargesSettings
 
 
 class Accounts(Http):
@@ -60,3 +60,11 @@ class Accounts(Http):
             "payment_charges_settings"
         ]
         return [PaymentChargesSettings(**c) for c in response]
+
+    async def retrieve_compliance_settings(self, account_id: str, **kwargs: Any) -> ComplianceSettings:
+        """Retrieve compliance settings for given account."""
+        return ComplianceSettings(**await self.get("/v2/accounts/" + account_id + "/compliance_settings", query=kwargs))
+
+    async def update_compliance_settings(self, account_id: str, **kwargs: Any) -> ComplianceSettings:
+        """Update compliance settings for given account."""
+        return ComplianceSettings(**await self.post("/v2/accounts/" + account_id + "/compliance_settings", kwargs))

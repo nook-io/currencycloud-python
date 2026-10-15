@@ -8,7 +8,7 @@ from currencycloud.client import Client as Client
 from currencycloud.config import Config as Config
 
 __title__ = "currencycloud"
-__version__ = "5.7.1"
+__version__ = "5.7.3"
 __license__ = "MIT"
 __copyright__ = "Copyright 2015-2019 Currencycloud"
 

@@ -1,6 +1,7 @@
 """All the Domain Objects of the CC APIs"""
 
 from currencycloud.resources.account import Account as Account
+from currencycloud.resources.account import ComplianceSettings as ComplianceSettings
 from currencycloud.resources.account import PaymentChargesSettings as PaymentChargesSettings
 from currencycloud.resources.account_verification import AccountVerification as AccountVerification
 from currencycloud.resources.balance import Balance as Balance
