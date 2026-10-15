@@ -1,5 +1,5 @@
 from currencycloud import Client, Config
-from currencycloud.resources import Account, PaymentChargesSettings
+from currencycloud.resources import Account, ComplianceSettings, PaymentChargesSettings
 from tests.integration.conftest import my_vcr
 
 
@@ -99,3 +99,23 @@ class TestAccounts:
             assert settings.charge_type == "ours"
             assert settings.enabled is True
             assert settings.default is True
+
+    async def test_accounts_can_get_compliance_settings(self) -> None:
+        with my_vcr.use_cassette("accounts/can_get_compliance_settings.json"):
+            settings = await self.client.accounts.retrieve_compliance_settings("8ec3a69b-02d1-4f09-9a6b-6bd54a61b3a8")
+
+            assert settings is not None
+            assert isinstance(settings, ComplianceSettings)
+            assert settings.customer_risk == "LOW"
+            assert settings.expected_monthly_activity_value == 50000
+            assert settings.expected_transaction_countries == ["GB", "US", "FR"]
+
+    async def test_accounts_can_update_compliance_settings(self) -> None:
+        with my_vcr.use_cassette("accounts/can_update_compliance_settings.json"):
+            settings = await self.client.accounts.update_compliance_settings(
+                "8ec3a69b-02d1-4f09-9a6b-6bd54a61b3a8", customer_risk="MEDIUM"
+            )
+
+            assert settings is not None
+            assert isinstance(settings, ComplianceSettings)
+            assert settings.customer_risk == "MEDIUM"

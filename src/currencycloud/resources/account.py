@@ -35,3 +35,7 @@ class Account(Resource):
 
 class PaymentChargesSettings(Resource):
     pass
+
+
+class ComplianceSettings(Resource):
+    pass

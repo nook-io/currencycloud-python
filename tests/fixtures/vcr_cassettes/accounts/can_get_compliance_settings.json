@@ -1,0 +1,89 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2018-01-01T12:34:56",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "login_id=development%40currencycloud.com&api_key=deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+        },
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate",
+          "Connection": "keep-alive",
+          "Content-Length": "104",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "User-Agent": "CurrencyCloudSDK/2.0 Python/5.7.0"
+        },
+        "method": "POST",
+        "uri": "https://devapi.currencycloud.com/v2/authenticate/api"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAA6pWSiwtyYgvyc9OzVOyUjKwSDawNEpLTTFONE+1NE9MSTSztEg1TU02M0g2TjVJVKoFAAAA//8DAHoK+uIxAAAA",
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "CF-RAY": "35f4cdd68bd5358a-LHR",
+          "Connection": "keep-alive",
+          "Content-Encoding": "gzip",
+          "Content-Type": "application/json;charset=utf-8",
+          "Date": "Mon, 01 January 2018 12:34:56 GMT",
+          "Server": "cloudflare-nginx",
+          "Set-Cookie": "__cfduid=de80fc864b341e306dc9603ce66028f4d1494837748; expires=Tue, 01-Jan-18 12:34:56 GMT; path=/; domain=.thecurrencycloud.com; HttpOnly",
+          "Transfer-Encoding": "chunked",
+          "Vary": "Origin",
+          "X-Content-Type-Options": "nosniff",
+          "X-Request-Id": "3316235857244168060"
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://devapi.currencycloud.com/v2/authenticate/api"
+      }
+    },
+    {
+      "recorded_at": "2018-01-01T12:34:56",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": "*/*",
+          "Accept-Encoding": "gzip, deflate",
+          "Connection": "keep-alive",
+          "Cookie": "__cfduid=de80fc864b341e306dc9603ce66028f4d1494837748",
+          "User-Agent": "CurrencyCloudSDK/2.0 Python/5.7.0",
+          "X-Auth-Token": "08c092fed3a7e97ada698e5ec60c3e4a"
+        },
+        "method": "GET",
+        "uri": "https://devapi.currencycloud.com/v2/accounts/8ec3a69b-02d1-4f09-9a6b-6bd54a61b3a8/compliance_settings"
+      },
+      "response": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{ \"account_id\": \"8ec3a69b-02d1-4f09-9a6b-6bd54a61b3a8\", \"customer_risk\": \"LOW\", \"expected_monthly_activity_value\": 50000, \"expected_monthly_activity_volume\": 20, \"expected_transaction_countries\": [\"GB\", \"US\", \"FR\"], \"expected_transaction_currencies\": \"USD\" }"
+        },
+        "headers": {
+          "CF-RAY": "35f4cde068ac358a-LHR",
+          "Connection": "keep-alive",
+          "Content-Type": "application/json;charset=utf-8",
+          "Date": "Mon, 01 January 2018 12:34:56 GMT",
+          "Server": "cloudflare-nginx",
+          "Vary": "Origin",
+          "X-Content-Type-Options": "nosniff",
+          "X-Request-Id": "3316235870478978316"
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://devapi.currencycloud.com/v2/accounts/8ec3a69b-02d1-4f09-9a6b-6bd54a61b3a8/compliance_settings"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}

@@ -1,6 +1,6 @@
 [project]
 name = "currencycloud"
-version = "5.7.2"
+version = "5.7.3"
 description = "Async Python SDK for the Currencycloud API"
 readme = "README.md"
 requires-python = ">=3.11"
